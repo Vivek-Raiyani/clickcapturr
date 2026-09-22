@@ -1,5 +1,6 @@
 from datetime import timedelta
 from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 from authlib.integrations.starlette_client import OAuth
 
@@ -12,7 +13,7 @@ from app.schemas.response import DataResponse, MessageResponse
 from app.services import auth_service
 from app.models.user import User
 
-router = APIRouter(prefix="/auth")
+router = APIRouter()
 
 oauth = OAuth()
 oauth.register(
@@ -89,7 +90,7 @@ async def auth_google(request: Request):
     redirect_uri = str(request.url_for('auth_google_callback'))
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
-@router.get("/google/callback", response_model=DataResponse[Token])
+@router.get("/google/callback")
 async def auth_google_callback(request: Request, db: AsyncSession = Depends(deps.get_db)):
     """
     Handles the callback from Google, creates user if necessary (with unaccepted policies),
@@ -124,8 +125,5 @@ async def auth_google_callback(request: Request, db: AsyncSession = Depends(deps
         {"sub": str(user.id)}, expires_delta=access_token_expires
     )
     
-    token_response = Token(
-        access_token=access_token,
-        token_type="bearer"
-    )
-    return DataResponse(data=token_response)
+    redirect_url = f"{settings.FRONTEND_URL}/auth/callback?token={access_token}"
+    return RedirectResponse(url=redirect_url)

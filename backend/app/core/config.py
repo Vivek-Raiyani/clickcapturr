@@ -7,6 +7,7 @@ class Settings(BaseSettings):
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     STORAGE_PROVIDER: str = "local"
+    FRONTEND_URL: str = "http://localhost:3000"
     
     # AWS S3 Settings
     AWS_ACCESS_KEY_ID: str | None = None

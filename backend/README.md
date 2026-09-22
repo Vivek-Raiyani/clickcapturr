@@ -24,6 +24,9 @@ This project uses **Alembic** to manage database schema migrations. Since the ap
 ### 1. Generating a New Migration
 Whenever you modify your models (e.g., adding a new field or a new table in `app/models/`), you need to generate a migration script.
 
+**Note on Individual vs. Multiple Models:** 
+Because of our dynamic Alembic configuration in `alembic/env.py`, all model files placed inside the `app/models/` directory are automatically discovered. This means you **do not** need a special command to migrate a single model file versus a list of files. Whether you changed one file or ten, running the command below will automatically detect all the changes across your models and bundle them into the migration!
+
 ```bash
 alembic revision --autogenerate -m "Description of your changes"
 ```

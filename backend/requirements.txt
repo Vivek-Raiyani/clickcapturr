@@ -10,4 +10,6 @@ python-multipart
 boto3
 aiosqlite
 sqlite-web
+authlib
+httpx
 

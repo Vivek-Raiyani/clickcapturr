@@ -5,7 +5,19 @@ class UserBase(BaseModel):
     email: EmailStr
 
 class UserCreate(UserBase):
+    first_name: str
+    last_name: str | None = None
     password: str
+    age_consent: bool
+    terms_policy_accepted: bool
+
+class UserCreateOAuth(UserBase):
+    first_name: str
+    last_name: str | None = None
+    google_id: str | None = None
+    auth_provider: str
+    age_consent: bool = False
+    terms_policy_accepted: bool = False
 
 class UserLogin(UserBase):
     password: str

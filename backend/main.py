@@ -2,6 +2,7 @@ import os
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
+from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.v1.router import api_router
 from app.core.config import settings
@@ -13,6 +14,9 @@ app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url="/api/v1/openapi.json"
 )
+
+# Required by Authlib for Starlette
+app.add_middleware(SessionMiddleware, secret_key=settings.SECRET_KEY)
 
 # Set all CORS enabled origins
 app.add_middleware(

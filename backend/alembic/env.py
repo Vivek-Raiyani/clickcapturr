@@ -16,8 +16,13 @@ if config.config_file_name is not None:
 
 from app.core.config import settings
 from app.models.base import Base
-# Import all models here for 'autogenerate' support
-from app.models.user import User
+import pkgutil
+import importlib
+import app.models
+
+# Import all models dynamically for 'autogenerate' support
+for _, module_name, _ in pkgutil.iter_modules(app.models.__path__):
+    importlib.import_module(f"app.models.{module_name}")
 
 # Overwrite the alembic.ini URL with the one from our environment
 # Strip out async driver for sync alembic execution.

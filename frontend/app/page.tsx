@@ -1,17 +1,59 @@
+"use client";
+
+import React, { useState } from "react";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { AuthModal } from "@/components/auth/AuthModal";
+
 export default function Home() {
+  const { user, logout, isLoading } = useAuth();
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authModalView, setAuthModalView] = useState<"signin" | "signup">("signin");
+
+  const openAuthModal = (view: "signin" | "signup") => {
+    setAuthModalView(view);
+    setIsAuthModalOpen(true);
+  };
+
   return (
     <div className="min-h-screen font-sans bg-background text-foreground flex flex-col">
       {/* Navigation */}
       <header className="border-b border-border px-8 py-6 flex justify-between items-center">
         <div className="text-xl font-bold tracking-tight font-serif">vcarrd.</div>
-        <nav className="flex gap-6 text-sm font-medium">
+        <nav className="hidden md:flex gap-6 text-sm font-medium">
           <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
           <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
           <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">About</a>
         </nav>
-        <button className="bg-foreground text-background px-5 py-2.5 rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
-          Sign In
-        </button>
+        <div className="flex gap-4 items-center">
+          {!isLoading && user ? (
+            <>
+              <Link 
+                href="/dashboard"
+                className="text-sm font-medium hover:text-muted-foreground transition-colors"
+              >
+                Dashboard
+              </Link>
+              <button 
+                onClick={logout}
+                className="border border-border text-foreground px-4 py-2 rounded-full text-sm font-medium hover:bg-muted transition-colors"
+              >
+                Sign Out
+              </button>
+            </>
+          ) : (
+            <>
+              {!isLoading && (
+                <button 
+                  onClick={() => openAuthModal("signin")}
+                  className="bg-foreground text-background px-5 py-2.5 rounded-full text-sm font-medium hover:opacity-90 transition-opacity"
+                >
+                  Sign In
+                </button>
+              )}
+            </>
+          )}
+        </div>
       </header>
 
       {/* Hero Section */}
@@ -25,9 +67,21 @@ export default function Home() {
             No design skills required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <button className="bg-primary text-primary-foreground px-8 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-opacity">
-              Start Free Trial
-            </button>
+            {user ? (
+              <Link 
+                href="/dashboard"
+                className="bg-primary text-primary-foreground px-8 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-opacity"
+              >
+                Go to Dashboard
+              </Link>
+            ) : (
+              <button 
+                onClick={() => openAuthModal("signup")}
+                className="bg-primary text-primary-foreground px-8 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-opacity"
+              >
+                Start Free Trial
+              </button>
+            )}
             <button className="border border-border bg-transparent text-foreground px-8 py-4 rounded-full font-medium text-lg hover:bg-muted transition-colors">
               View Examples
             </button>
@@ -99,9 +153,18 @@ export default function Home() {
            <div className="max-w-2xl mx-auto">
              <h2 className="text-4xl font-serif font-medium mb-6">Ready to stand out?</h2>
              <p className="text-xl mb-10 text-soft-white/80">Join thousands of others using vcarrd today.</p>
-             <button className="bg-yellow text-black px-10 py-4 rounded-full font-medium text-lg hover:brightness-95 transition-all">
-                Get Started Now
-             </button>
+             {user ? (
+                <Link href="/dashboard" className="inline-block bg-yellow text-black px-10 py-4 rounded-full font-medium text-lg hover:brightness-95 transition-all">
+                  Go to Dashboard
+                </Link>
+             ) : (
+                <button 
+                  onClick={() => openAuthModal("signup")}
+                  className="bg-yellow text-black px-10 py-4 rounded-full font-medium text-lg hover:brightness-95 transition-all"
+                >
+                  Get Started Now
+                </button>
+             )}
            </div>
         </section>
       </main>
@@ -110,6 +173,12 @@ export default function Home() {
       <footer className="px-8 py-12 border-t border-border text-center text-muted-foreground text-sm">
         &copy; {new Date().getFullYear()} vcarrd. All rights reserved.
       </footer>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        defaultView={authModalView}
+      />
     </div>
   );
 }

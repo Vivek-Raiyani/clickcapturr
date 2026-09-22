@@ -21,7 +21,6 @@ export interface PageTopBarProps {
   backHref: string;
   showSuccessPreview?: boolean;
   onToggleSuccessPreview: () => void;
-  onSelectAIPreset: (presetKey: string) => void;
   onSave?: () => void;
   onDeletePage?: () => void;
   saving?: boolean;
@@ -41,9 +40,7 @@ export function PageTopBar({
   backHref,
   showSuccessPreview = false,
   onToggleSuccessPreview,
-  onSelectAIPreset,
   onSave,
-  onDeletePage,
   saving = false,
   savedSuccess = false,
   mode = "production",
@@ -73,7 +70,7 @@ export function PageTopBar({
           />
           {slug && (
             <span className="hidden lg:inline-block text-[11px] font-mono text-muted-foreground">
-              (/p/{slug})
+              (/public/{slug})
             </span>
           )}
         </div>
@@ -88,23 +85,6 @@ export function PageTopBar({
             {savedSuccess ? "Saved" : mode === "demo" ? "Sandbox" : "Draft"}
           </span>
         </div>
-      </div>
-
-      {/* Center: AI Presets */}
-      <div className="hidden md:flex items-center gap-1.5 bg-card/90 border border-border px-2.5 py-1 rounded-xl shadow-xs">
-        <span className="text-[11px] text-muted-foreground font-medium mr-1 flex items-center gap-1">
-          <Sparkles className="w-3 h-3 text-primary" /> AI Presets:
-        </span>
-        {Object.keys(SAMPLE_AI_PRESETS).map((key) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => onSelectAIPreset(key)}
-            className="px-2 py-0.5 text-[11px] rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border border-border/50 transition-colors cursor-pointer capitalize font-sans"
-          >
-            {key.split("-")[1] || key}
-          </button>
-        ))}
       </div>
 
       {/* Right: View Toggle, Link & Save */}
@@ -126,7 +106,7 @@ export function PageTopBar({
 
         {slug && (
           <Link
-            href={`/p/${slug}`}
+            href={`/public/${slug}`}
             target="_blank"
             className="hidden sm:flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded-lg hover:bg-muted/80 transition-colors"
           >
@@ -134,50 +114,29 @@ export function PageTopBar({
           </Link>
         )}
 
-        {mode === "demo" ? (
-          <button
-            type="button"
-            onClick={onOpenExportModal}
-            className="px-4 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs transition-all shadow-md shadow-primary/20 cursor-pointer"
-          >
-            Export Page
-          </button>
-        ) : (
-          <button
-            type="button"
-            onClick={onSave}
-            disabled={saving}
-            className="px-4 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md shadow-primary/20 disabled:opacity-50 cursor-pointer"
-          >
-            {saving ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Saving...</span>
-              </>
-            ) : savedSuccess ? (
-              <>
-                <Check className="w-3.5 h-3.5" />
-                <span>Saved</span>
-              </>
-            ) : (
-              <>
-                <Save className="w-3.5 h-3.5" />
-                <span>Save Page</span>
-              </>
-            )}
-          </button>
-        )}
-
-        {onDeletePage && (
-          <button
-            type="button"
-            onClick={onDeletePage}
-            className="p-2 rounded-xl text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
-            title="Delete Page"
-          >
-            <Trash2 className="w-4 h-4" />
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={onSave}
+          disabled={saving}
+          className="px-4 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md shadow-primary/20 disabled:opacity-50 cursor-pointer"
+        >
+          {saving ? (
+            <>
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              <span>Saving...</span>
+            </>
+          ) : savedSuccess ? (
+            <>
+              <Check className="w-3.5 h-3.5" />
+              <span>Saved</span>
+            </>
+          ) : (
+            <>
+              <Save className="w-3.5 h-3.5" />
+              <span>Save Page</span>
+            </>
+          )}
+        </button>
       </div>
     </header>
   );

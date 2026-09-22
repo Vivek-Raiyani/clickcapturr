@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Optional
 from uuid import UUID
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api import deps
@@ -27,10 +27,11 @@ async def create_page(
 
 @router.get("/", response_model=DataResponse[List[PageResponse]])
 async def get_my_pages(
+    q: Optional[str] = Query(None, description="Search by page name or slug"),
     db: AsyncSession = Depends(deps.get_db),
     current_user: User = Depends(deps.get_current_active_user)
 ):
-    pages = await page_service.get_pages_for_user(db, current_user.id)
+    pages = await page_service.get_pages_for_user(db, current_user.id, search=q)
     return DataResponse(data=pages)
 
 @router.get("/{page_id}", response_model=DataResponse[PageResponse])

@@ -37,10 +37,6 @@ export interface PagePreviewProps {
   onUpdateState: (updater: (prev: PageBuilderState) => PageBuilderState) => void;
   deviceMode: DeviceMode;
   onDeviceModeChange: (mode: DeviceMode) => void;
-  aiPrompt: string;
-  onAiPromptChange: (prompt: string) => void;
-  onAiGenerate: () => void;
-  isAiGenerating: boolean;
   isPublicView?: boolean;
   onSubmitForm?: (data: Record<string, unknown>) => Promise<boolean>;
 }
@@ -75,10 +71,6 @@ export function PagePreview({
   onUpdateState,
   deviceMode,
   onDeviceModeChange,
-  aiPrompt,
-  onAiPromptChange,
-  onAiGenerate,
-  isAiGenerating,
   isPublicView = false,
   onSubmitForm,
 }: PagePreviewProps) {
@@ -308,39 +300,6 @@ export function PagePreview({
 
   return (
     <main className={`flex-1 overflow-y-auto bg-background flex flex-col items-center relative ${isPublicView ? "" : "p-4 sm:p-6 lg:p-8"}`}>
-      {/* AI Page Generation Bar (Top of canvas) */}
-      {!isPublicView && (
-        <div className="w-full max-w-2xl mb-6 bg-muted/90 border border-border backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-2xl flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
-            <Sparkles className="w-4 h-4" />
-          </div>
-          <input
-            type="text"
-            value={aiPrompt}
-            onChange={(e) => onAiPromptChange(e.target.value)}
-            placeholder="Paste your topic or value proposition to auto-write this page..."
-            className="flex-1 bg-transparent text-xs sm:text-sm text-foreground focus:outline-none placeholder:text-muted-foreground min-w-0"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") onAiGenerate();
-            }}
-          />
-          <button
-            type="button"
-            onClick={onAiGenerate}
-            disabled={isAiGenerating}
-            className="px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 shadow-md shadow-primary/20 disabled:opacity-50 cursor-pointer"
-          >
-            {isAiGenerating ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Generating...</span>
-              </>
-            ) : (
-              <span>Auto-Generate</span>
-            )}
-          </button>
-        </div>
-      )}
 
       {/* Device Switcher */}
       {!isPublicView && (

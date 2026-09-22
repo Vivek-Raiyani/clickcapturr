@@ -268,7 +268,6 @@ export default function ThemePreviewPage() {
                     onChangeTitle={() => {}} 
                     backHref="#" 
                     onToggleSuccessPreview={() => {}} 
-                    onSelectAIPreset={() => {}} 
                   />
                   <div className="flex flex-1 overflow-hidden">
                     <PageNavPanel 

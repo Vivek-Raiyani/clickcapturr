@@ -50,8 +50,6 @@ export function PageBuilder({
   const [deviceMode, setDeviceMode] = useState<DeviceMode>("desktop");
   const [activeTab, setActiveTab] = useState<BuilderTab>("content");
   const [activeSection, setActiveSection] = useState<BuilderSection>("headline");
-  const [aiPrompt, setAiPrompt] = useState("");
-  const [isAiGenerating, setIsAiGenerating] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Demo export modal state
@@ -70,50 +68,6 @@ export function PageBuilder({
     setTimeout(() => setToastMessage(null), 3000);
   };
 
-  // Quick AI preset loader
-  const handleAIPreset = (presetKey: string) => {
-    const preset = SAMPLE_AI_PRESETS[presetKey];
-    if (preset) {
-      setState((prev) => ({
-        ...prev,
-        theme: { ...prev.theme, ...preset.theme },
-        content: { ...prev.content, ...preset.content },
-      }));
-      showToast(`Applied "${preset.name}" preset`);
-    }
-  };
-
-  // AI auto-generation simulation
-  const handleAIGenerate = () => {
-    if (!aiPrompt.trim()) return;
-    setIsAiGenerating(true);
-
-    setTimeout(() => {
-      setIsAiGenerating(false);
-      const cleanPrompt = aiPrompt.trim();
-      setState((prev) => ({
-        ...prev,
-        content: {
-          ...prev.content,
-          eyebrow: "HIGH-LEVERAGE BLUEPRINT",
-          headline: `The Complete Playbook for ${cleanPrompt}`,
-          description:
-            "Discover the exact step-by-step framework to scale your reach and monetize with high-margin digital assets. Includes actionable templates and resources.",
-          buttonText: "UNLOCK THE PLAYBOOK →",
-          offer: {
-            type: "pdf",
-            fileName: `${cleanPrompt.toLowerCase().replace(/\s+/g, "-")}-mastery.pdf`,
-            fileSize: "5.8 MB",
-            fileUrl: null,
-            assetId: null,
-          },
-        },
-      }));
-      setAiPrompt("");
-      showToast("✨ AI generated your custom landing page!");
-    }, 1200);
-  };
-
   return (
     <div className="flex flex-col h-screen bg-background text-foreground font-sans select-none overflow-hidden">
       {/* 1. TOP APP BAR */}
@@ -129,9 +83,7 @@ export function PageBuilder({
             showSuccessPreview: !prev.showSuccessPreview,
           }))
         }
-        onSelectAIPreset={handleAIPreset}
         onSave={() => onSave?.(state)}
-        onDeletePage={onDeletePage}
         saving={saving}
         savedSuccess={savedSuccess}
         mode={mode}
@@ -155,10 +107,6 @@ export function PageBuilder({
           onUpdateState={setState}
           deviceMode={deviceMode}
           onDeviceModeChange={setDeviceMode}
-          aiPrompt={aiPrompt}
-          onAiPromptChange={setAiPrompt}
-          onAiGenerate={handleAIGenerate}
-          isAiGenerating={isAiGenerating}
         />
 
         {/* Right: Contextual Inspector */}

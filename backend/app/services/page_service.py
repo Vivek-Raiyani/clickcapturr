@@ -10,6 +10,7 @@ singleton-style dependency or instantiated inline.
 
 import logging
 import datetime
+from typing import Optional
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -63,7 +64,7 @@ class PageService:
     # ------------------------------------------------------------------
 
     async def get_pages_for_user(
-        self, db: AsyncSession, user_id: UUID
+        self, db: AsyncSession, user_id: UUID, search: Optional[str] = None
     ) -> list[Page]:
         """
         Fetch all non-deleted pages owned by a user.
@@ -71,18 +72,27 @@ class PageService:
         Args:
             db:      Active async database session.
             user_id: UUID of the page owner.
+            search:  Optional search string to filter by name or slug (case-insensitive).
 
         Returns:
             List of Page instances (may be empty).
         """
-        logger.debug("Fetching all pages for user_id='%s'", user_id)
-
-        result = await db.execute(
-            select(Page).where(
-                Page.user_id == user_id,
-                Page.is_deleted == False,
-            )
+        logger.debug(
+            "Fetching pages for user_id='%s' (search='%s')", user_id, search
         )
+
+        query = select(Page).where(
+            Page.user_id == user_id,
+            Page.is_deleted == False,
+        )
+
+        if search and search.strip():
+            term = f"%{search.strip()}%"
+            query = query.where(
+                Page.name.ilike(term) | Page.slug.ilike(term)
+            )
+
+        result = await db.execute(query)
         pages = list(result.scalars().all())
 
         logger.debug("Found %d page(s) for user_id='%s'", len(pages), user_id)

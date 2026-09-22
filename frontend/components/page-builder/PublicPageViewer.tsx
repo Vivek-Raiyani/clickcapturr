@@ -61,10 +61,6 @@ export function PublicPageViewer({ page, formFields = [] }: PublicPageViewerProp
         onUpdateState={setState}
         deviceMode={deviceMode}
         onDeviceModeChange={() => {}}
-        aiPrompt=""
-        onAiPromptChange={() => {}}
-        onAiGenerate={() => {}}
-        isAiGenerating={false}
         isPublicView={true}
         onSubmitForm={handleSubmit}
       />

@@ -723,10 +723,6 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
               onUpdateState={() => {}}
               deviceMode={previewDevice}
               onDeviceModeChange={() => {}}
-              aiPrompt=""
-              onAiPromptChange={() => {}}
-              onAiGenerate={() => {}}
-              isAiGenerating={false}
             />
           </div>
         </div>

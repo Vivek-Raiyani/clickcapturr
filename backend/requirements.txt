@@ -1,0 +1,13 @@
+fastapi[standard]
+uvicorn[standard]
+sqlalchemy
+alembic
+pydantic[email]
+pydantic-settings
+bcrypt
+python-jose[cryptography]
+python-multipart
+boto3
+aiosqlite
+sqlite-web
+

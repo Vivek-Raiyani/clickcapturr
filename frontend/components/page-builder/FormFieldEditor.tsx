@@ -22,7 +22,7 @@ const FIELD_TYPES: Array<{ type: FormFieldType; label: string }> = [
  * custom form fields configured for a creator landing page.
  *
  * Fully styled with the application's unified theme design tokens
- * (`theme-surface`, `theme-card`, `theme-border`, `theme-text`, `theme-primary`).
+ * (`muted`, `card`, `border`, `foreground`, `primary`).
  */
 export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
   const addField = () => {
@@ -107,15 +107,15 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="text-xs font-semibold text-theme-text">Lead Capture Fields</h4>
-          <p className="text-[11px] text-theme-text-muted">
+          <h4 className="text-xs font-semibold text-foreground">Lead Capture Fields</h4>
+          <p className="text-[11px] text-muted-foreground">
             Define questions viewers must fill to claim your offer
           </p>
         </div>
         <button
           type="button"
           onClick={addField}
-          className="px-2.5 py-1 text-xs rounded-lg bg-theme-primary hover:bg-theme-primary-hover text-theme-primary-fg font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
+          className="px-2.5 py-1 text-xs rounded-lg bg-primary hover:bg-primary/90 text-primary-foreground font-semibold flex items-center gap-1 cursor-pointer transition-colors shadow-xs"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Add Field</span>
@@ -126,13 +126,13 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
         {fields.map((field, idx) => (
           <div
             key={field.id}
-            className="p-3.5 rounded-xl bg-theme-card border border-theme-border space-y-3"
+            className="p-3.5 rounded-xl bg-card border border-border space-y-3"
           >
             {/* Header: drag/reorder & title & delete */}
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-1.5 min-w-0">
-                <GripVertical className="w-3.5 h-3.5 text-theme-text-muted shrink-0" />
-                <span className="text-xs font-medium text-theme-text truncate">
+                <GripVertical className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                <span className="text-xs font-medium text-foreground truncate">
                   Field #{idx + 1}: {field.label || "Untitled"}
                 </span>
               </div>
@@ -141,7 +141,7 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
                   type="button"
                   disabled={idx === 0}
                   onClick={() => moveField(idx, "up")}
-                  className="p-1 text-theme-text-muted hover:text-theme-text disabled:opacity-30 cursor-pointer transition-colors"
+                  className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer transition-colors"
                   title="Move Up"
                 >
                   <ChevronUp className="w-3.5 h-3.5" />
@@ -150,7 +150,7 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
                   type="button"
                   disabled={idx === fields.length - 1}
                   onClick={() => moveField(idx, "down")}
-                  className="p-1 text-theme-text-muted hover:text-theme-text disabled:opacity-30 cursor-pointer transition-colors"
+                  className="p-1 text-muted-foreground hover:text-foreground disabled:opacity-30 cursor-pointer transition-colors"
                   title="Move Down"
                 >
                   <ChevronDown className="w-3.5 h-3.5" />
@@ -159,7 +159,7 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
                   <button
                     type="button"
                     disabled
-                    className="p-1 text-theme-text-muted/30 ml-1 cursor-not-allowed"
+                    className="p-1 text-muted-foreground/30 ml-1 cursor-not-allowed"
                     title="Required default field cannot be removed"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -179,7 +179,7 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
 
             {/* Label Input */}
             <div>
-              <label className="block text-[10.5px] text-theme-text-muted font-medium mb-1">
+              <label className="block text-[10.5px] text-muted-foreground font-medium mb-1">
                 Field Label
               </label>
               <input
@@ -187,14 +187,14 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
                 value={field.label}
                 onChange={(e) => updateField(field.id, { label: e.target.value })}
                 placeholder="e.g. Work Email, Company Size"
-                className="w-full bg-theme-surface border border-theme-border rounded-lg px-2.5 py-1.5 text-xs text-theme-text focus:outline-none focus:border-theme-primary transition-colors"
+                className="w-full bg-muted border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary transition-colors"
               />
             </div>
 
             {/* Type selector & Required checkbox */}
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-[10.5px] text-theme-text-muted font-medium mb-1">
+                <label className="block text-[10.5px] text-muted-foreground font-medium mb-1">
                   Field Type
                 </label>
                 <select
@@ -204,7 +204,7 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
                       fieldType: e.target.value as FormFieldType,
                     })
                   }
-                  className="w-full bg-theme-surface border border-theme-border rounded-lg px-2.5 py-1.5 text-xs text-theme-text focus:outline-none focus:border-theme-primary cursor-pointer"
+                  className="w-full bg-muted border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary cursor-pointer"
                 >
                   {FIELD_TYPES.map((t) => (
                     <option key={t.type} value={t.type}>
@@ -215,14 +215,14 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
               </div>
 
               <div className="flex items-end pb-1">
-                <label className="flex items-center gap-2 cursor-pointer text-xs text-theme-text select-none">
+                <label className="flex items-center gap-2 cursor-pointer text-xs text-foreground select-none">
                   <input
                     type="checkbox"
                     checked={field.isRequired}
                     onChange={(e) =>
                       updateField(field.id, { isRequired: e.target.checked })
                     }
-                    className="w-4 h-4 rounded bg-theme-surface border-theme-border text-theme-primary focus:ring-0 cursor-pointer"
+                    className="w-4 h-4 rounded bg-muted border-border text-primary focus:ring-0 cursor-pointer"
                   />
                   <span>Required field</span>
                 </label>
@@ -231,13 +231,13 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
 
             {/* If field is select, render option builder */}
             {field.fieldType === "select" && (
-              <div className="pt-2 border-t border-theme-border space-y-2">
-                <div className="flex items-center justify-between text-[10px] text-theme-text-muted">
+              <div className="pt-2 border-t border-border space-y-2">
+                <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                   <span>Dropdown Choices</span>
                   <button
                     type="button"
                     onClick={() => addSelectOption(field.id)}
-                    className="text-theme-primary hover:text-theme-primary-hover font-medium cursor-pointer transition-colors"
+                    className="text-primary hover:text-primary/90 font-medium cursor-pointer transition-colors"
                   >
                     + Add Choice
                   </button>
@@ -251,13 +251,13 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
                         onChange={(e) =>
                           updateSelectOption(field.id, optIdx, e.target.value)
                         }
-                        className="flex-1 bg-theme-surface border border-theme-border rounded px-2 py-1 text-xs text-theme-text focus:outline-none focus:border-theme-primary"
+                        className="flex-1 bg-muted border border-border rounded px-2 py-1 text-xs text-foreground focus:outline-none focus:border-primary"
                         placeholder={`Option ${optIdx + 1}`}
                       />
                       <button
                         type="button"
                         onClick={() => removeSelectOption(field.id, optIdx)}
-                        className="text-theme-text-muted hover:text-red-400 p-1 cursor-pointer transition-colors"
+                        className="text-muted-foreground hover:text-red-400 p-1 cursor-pointer transition-colors"
                       >
                         <Trash2 className="w-3 h-3" />
                       </button>
@@ -270,7 +270,7 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
         ))}
 
         {fields.length === 0 && (
-          <div className="p-6 text-center rounded-xl border border-dashed border-theme-border text-theme-text-muted text-xs">
+          <div className="p-6 text-center rounded-xl border border-dashed border-border text-muted-foreground text-xs">
             No fields defined. Click &quot;Add Field&quot; to request information from viewers.
           </div>
         )}

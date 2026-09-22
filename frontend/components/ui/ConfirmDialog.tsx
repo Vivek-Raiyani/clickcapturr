@@ -1,5 +1,8 @@
 "use client";
 
+import { Modal } from "./Modal";
+import { Button } from "./Button";
+
 /**
  * ConfirmDialog — THE single reusable confirm/delete modal.
  * Used for: delete-page, delete-link, delete-form-field, delete-account, etc.
@@ -24,16 +27,12 @@ export function ConfirmDialog({
   onConfirm: () => void | Promise<void>;
   onCancel: () => void;
 }) {
-  if (!open) return null;
-  // TODO: implement with Modal primitive + Tailwind danger styles
   return (
-    <dialog open>
-      <h2>{title}</h2>
-      <p>{description}</p>
-      <button onClick={onCancel}>{cancelLabel}</button>
-      <button onClick={onConfirm} style={{ color: isDangerous ? "red" : undefined }}>
-        {confirmLabel}
-      </button>
-    </dialog>
+    <Modal open={open} onClose={onCancel} title={title} description={description} maxWidth="sm">
+      <div className="flex justify-end gap-3 pt-2">
+        <Button variant="secondary" onClick={onCancel}>{cancelLabel}</Button>
+        <Button variant={isDangerous ? "danger" : "primary"} onClick={onConfirm}>{confirmLabel}</Button>
+      </div>
+    </Modal>
   );
 }

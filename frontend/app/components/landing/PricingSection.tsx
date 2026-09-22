@@ -57,17 +57,17 @@ export function PricingSection({ initialData }: PricingSectionProps) {
   }
 
   return (
-    <div className="bg-theme-bg text-theme-text transition-colors duration-300">
+    <div className="bg-background text-foreground transition-colors duration-300">
       {/* ── Hero ── */}
       <section className="pt-20 pb-4 px-4 sm:px-6 lg:px-8 text-center max-w-3xl mx-auto">
-        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-theme-primary/10 text-theme-primary text-[11px] font-mono font-semibold uppercase tracking-widest mb-6 border border-theme-primary/20">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-[11px] font-mono font-semibold uppercase tracking-widest mb-6 border border-primary/20">
           <Sparkles className="w-3 h-3" />
           Simple, transparent pricing
         </span>
-        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold uppercase tracking-tight leading-[0.95] mb-5 text-theme-text whitespace-pre-line">
+        <h1 className="text-5xl sm:text-6xl lg:text-7xl font-serif font-bold uppercase tracking-tight leading-[0.95] mb-5 text-foreground whitespace-pre-line">
           {headline}
         </h1>
-        <p className="text-lg sm:text-xl font-sans text-theme-text-muted max-w-xl mx-auto leading-relaxed">
+        <p className="text-lg sm:text-xl font-sans text-muted-foreground max-w-xl mx-auto leading-relaxed">
           {subheadline}
         </p>
         <div className="mt-8">
@@ -87,7 +87,7 @@ export function PricingSection({ initialData }: PricingSectionProps) {
             />
           ))}
         </div>
-        <p className="text-center text-xs text-theme-text-muted font-mono mt-6">
+        <p className="text-center text-xs text-muted-foreground font-mono mt-6">
           All plans include SSL, 99.9% uptime SLA, and instant page delivery via CDN.
         </p>
       </section>
@@ -96,11 +96,11 @@ export function PricingSection({ initialData }: PricingSectionProps) {
       <PricingTable plans={plans} features={features} />
 
       {/* ── Trust strip ── */}
-      <section className="py-10 px-4 border-y border-theme-border bg-theme-surface">
-        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-x-10 gap-y-4 text-xs font-mono text-theme-text-muted uppercase tracking-widest">
+      <section className="py-10 px-4 border-y border-border bg-muted">
+        <div className="max-w-4xl mx-auto flex flex-wrap justify-center gap-x-10 gap-y-4 text-xs font-mono text-muted-foreground uppercase tracking-widest">
           {trustItems.map((item) => (
             <span key={item} className="flex items-center gap-1.5">
-              <Check className="w-3.5 h-3.5 text-theme-primary" />
+              <Check className="w-3.5 h-3.5 text-primary" />
               {item}
             </span>
           ))}
@@ -111,21 +111,21 @@ export function PricingSection({ initialData }: PricingSectionProps) {
       <FaqSection items={faqItems} />
 
       {/* ── Bottom CTA ── */}
-      <section className="py-24 sm:py-32 px-4 text-center relative overflow-hidden bg-theme-card border-t border-theme-border">
-        <div className="absolute inset-0 bg-gradient-to-b from-theme-primary/10 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-theme-primary/15 rounded-full blur-3xl pointer-events-none" />
+      <section className="py-24 sm:py-32 px-4 text-center relative overflow-hidden bg-card border-t border-border">
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 max-w-2xl mx-auto space-y-5">
-          <h2 className="text-4xl sm:text-6xl font-serif font-bold uppercase tracking-tight leading-[0.95] text-theme-text">
+          <h2 className="text-4xl sm:text-6xl font-serif font-bold uppercase tracking-tight leading-[0.95] text-foreground">
             Your First Page.<br />Live in 3 Minutes.
           </h2>
-          <p className="text-lg font-sans text-theme-text-muted">
+          <p className="text-lg font-sans text-muted-foreground">
             Join creators already converting viewers into subscribers.
           </p>
           <div className="pt-4 flex flex-col items-center gap-3">
             {user ? (
               <Link
                 href="/dashboard"
-                className="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-theme-primary hover:bg-theme-primary-hover text-theme-primary-fg font-sans font-bold text-lg shadow-2xl shadow-theme-primary/25 hover:-translate-y-0.5 transition-all duration-200"
+                className="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-sans font-bold text-lg shadow-2xl shadow-primary/25 hover:-translate-y-0.5 transition-all duration-200"
               >
                 Go to Dashboard
                 <ArrowRight className="w-5 h-5" />
@@ -133,13 +133,13 @@ export function PricingSection({ initialData }: PricingSectionProps) {
             ) : (
               <button
                 onClick={() => openAuthModal("signup")}
-                className="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-theme-primary hover:bg-theme-primary-hover text-theme-primary-fg font-sans font-bold text-lg shadow-2xl shadow-theme-primary/25 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
+                className="inline-flex items-center gap-3 px-9 py-4 rounded-2xl bg-primary hover:bg-primary/90 text-primary-foreground font-sans font-bold text-lg shadow-2xl shadow-primary/25 hover:-translate-y-0.5 transition-all duration-200 cursor-pointer"
               >
                 Start Free — No Card Needed
                 <ArrowRight className="w-5 h-5" />
               </button>
             )}
-            <p className="text-xs font-mono text-theme-text-muted">
+            <p className="text-xs font-mono text-muted-foreground">
               Free forever · Upgrade when you&apos;re ready
             </p>
           </div>

@@ -38,7 +38,7 @@ export function SegmentedControl<T extends string>({
     <div
       role="group"
       className={[
-        "inline-flex items-center gap-1 p-1 rounded-full bg-theme-surface border border-theme-border",
+        "inline-flex items-center gap-1 p-1 rounded-full bg-muted border border-border",
         className,
       ]
         .filter(Boolean)
@@ -56,8 +56,8 @@ export function SegmentedControl<T extends string>({
               "rounded-full font-sans font-semibold transition-all duration-200 cursor-pointer flex items-center justify-center",
               sizeStyles[size],
               isSelected
-                ? "bg-theme-primary text-theme-primary-fg shadow-sm"
-                : "text-theme-text-muted hover:text-theme-text",
+                ? "bg-primary text-primary-foreground shadow-sm"
+                : "text-muted-foreground hover:text-foreground",
               option.disabled ? "opacity-50 cursor-not-allowed" : "",
             ]
               .filter(Boolean)
@@ -70,8 +70,8 @@ export function SegmentedControl<T extends string>({
                   "ml-1.5 font-mono px-1.5 py-0.5 rounded-full",
                   size === "sm" ? "text-[9px]" : "text-[10px]",
                   isSelected
-                    ? "bg-theme-primary-fg/20 text-theme-primary-fg"
-                    : "bg-theme-primary/15 text-theme-primary",
+                    ? "bg-primary-foreground/20 text-primary-foreground"
+                    : "bg-primary/15 text-primary",
                 ].join(" ")}
               >
                 {option.badge}

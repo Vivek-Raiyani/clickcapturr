@@ -27,13 +27,13 @@ export function StatCard({
 
   return (
     <div
-      className={`bg-theme-card border border-theme-border rounded-xl flex flex-col justify-between shadow-xs transition-colors hover:border-theme-border/80 ${
+      className={`bg-card border border-border rounded-xl flex flex-col justify-between shadow-xs transition-colors hover:border-border/80 ${
         compact ? "p-3.5" : "p-5"
       } ${className}`}
     >
       <div className="flex items-center justify-between gap-2">
         <span
-          className={`font-medium text-theme-text-muted tracking-wider uppercase truncate ${
+          className={`font-medium text-muted-foreground tracking-wider uppercase truncate ${
             compact ? "text-[10px]" : "text-xs"
           }`}
         >
@@ -41,7 +41,7 @@ export function StatCard({
         </span>
         {icon && (
           <div
-            className={`rounded-lg bg-theme-surface flex items-center justify-center text-theme-primary border border-theme-border shrink-0 ${
+            className={`rounded-lg bg-muted flex items-center justify-center text-primary border border-border shrink-0 ${
               compact ? "w-6 h-6 [&>svg]:w-3.5 [&>svg]:h-3.5" : "w-8 h-8"
             }`}
           >
@@ -56,7 +56,7 @@ export function StatCard({
         }`}
       >
         <span
-          className={`font-bold tracking-tight text-theme-text ${
+          className={`font-bold tracking-tight text-foreground ${
             compact ? "text-xl leading-none" : "text-2xl"
           }`}
         >

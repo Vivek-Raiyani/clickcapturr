@@ -115,7 +115,7 @@ export function PageBuilder({
   };
 
   return (
-    <div className="flex flex-col h-screen bg-theme-bg text-theme-text font-sans select-none overflow-hidden">
+    <div className="flex flex-col h-screen bg-background text-foreground font-sans select-none overflow-hidden">
       {/* 1. TOP APP BAR */}
       <PageTopBar
         title={state.title}
@@ -179,7 +179,7 @@ export function PageBuilder({
 
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-theme-primary text-theme-primary-fg font-semibold text-xs px-4 py-2.5 rounded-xl shadow-xl shadow-theme-primary/20 flex items-center gap-2 animate-bounce">
+        <div className="fixed bottom-6 right-6 z-50 bg-primary text-primary-foreground font-semibold text-xs px-4 py-2.5 rounded-xl shadow-xl shadow-primary/20 flex items-center gap-2 animate-bounce">
           <Sparkles className="w-4 h-4" />
           {toastMessage}
         </div>
@@ -188,18 +188,18 @@ export function PageBuilder({
       {/* Export / Template Modal (Demo Mode) */}
       {isExportModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-xs">
-          <div className="relative w-full max-w-lg rounded-2xl bg-theme-card border border-theme-border p-6 shadow-2xl">
+          <div className="relative w-full max-w-lg rounded-2xl bg-card border border-border p-6 shadow-2xl">
             <button
               type="button"
               onClick={() => setIsExportModalOpen(false)}
-              className="absolute top-4 right-4 text-theme-text-muted hover:text-theme-text cursor-pointer transition-colors"
+              className="absolute top-4 right-4 text-muted-foreground hover:text-foreground cursor-pointer transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
-            <h3 className="font-serif text-lg font-bold text-theme-text mb-2">
+            <h3 className="font-serif text-lg font-bold text-foreground mb-2">
               Ready to Publish Your Page?
             </h3>
-            <p className="text-xs text-theme-text-muted mb-4">
+            <p className="text-xs text-muted-foreground mb-4">
               Sign in or connect this configuration directly to your VueMagnet workspace to generate instant QR codes and track email conversions.
             </p>
             <div className="flex justify-end gap-2">
@@ -210,14 +210,14 @@ export function PageBuilder({
                   setCopiedCode(true);
                   setTimeout(() => setCopiedCode(false), 2000);
                 }}
-                className="px-3 py-1.5 rounded-xl bg-theme-surface hover:bg-theme-surface-hover border border-theme-border text-xs text-theme-text font-medium flex items-center gap-1.5 cursor-pointer transition-colors"
+                className="px-3 py-1.5 rounded-xl bg-muted hover:bg-muted/80 border border-border text-xs text-foreground font-medium flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 {copiedCode ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedCode ? "Copied JSON" : "Copy Config"}</span>
               </button>
               <a
                 href="/dashboard/pages"
-                className="px-4 py-1.5 rounded-xl bg-theme-primary hover:bg-theme-primary-hover text-theme-primary-fg text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
+                className="px-4 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-semibold flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
               >
                 Go to Pages
               </a>

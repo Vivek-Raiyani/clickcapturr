@@ -30,21 +30,21 @@ export function DataTable<T extends Record<string, unknown>>({
 }: DataTableProps<T>) {
   if (rows.length === 0) {
     return (
-      <div className="bg-theme-card border border-theme-border rounded-xl p-8 text-center">
-        <p className="text-sm text-theme-text-muted">{emptyMessage}</p>
+      <div className="bg-card border border-border rounded-xl p-8 text-center">
+        <p className="text-sm text-muted-foreground">{emptyMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className={`overflow-x-auto rounded-xl border border-theme-border bg-theme-card ${className}`}>
+    <div className={`overflow-x-auto rounded-xl border border-border bg-card ${className}`}>
       <table className="w-full text-left text-sm border-collapse">
         <thead>
-          <tr className="border-b border-theme-border bg-theme-surface/40">
+          <tr className="border-b border-border bg-muted/40">
             {columns.map((col) => (
               <th
                 key={String(col.key)}
-                className={`py-3.5 px-4 text-xs font-semibold uppercase tracking-wider text-theme-text-muted ${
+                className={`py-3.5 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground ${
                   col.className || ""
                 }`}
               >
@@ -53,15 +53,15 @@ export function DataTable<T extends Record<string, unknown>>({
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-theme-border">
+        <tbody className="divide-y divide-border">
           {rows.map((row, i) => (
             <tr
               key={i}
               onClick={() => onRowClick?.(row)}
               className={`transition-colors ${
                 onRowClick
-                  ? "cursor-pointer hover:bg-theme-surface/60 active:bg-theme-surface"
-                  : "hover:bg-theme-surface/30"
+                  ? "cursor-pointer hover:bg-muted/60 active:bg-muted"
+                  : "hover:bg-muted/30"
               }`}
             >
               {columns.map((col) => {
@@ -69,7 +69,7 @@ export function DataTable<T extends Record<string, unknown>>({
                 return (
                   <td
                     key={String(col.key)}
-                    className={`py-3.5 px-4 text-theme-text align-middle ${col.className || ""}`}
+                    className={`py-3.5 px-4 text-foreground align-middle ${col.className || ""}`}
                   >
                     {col.render ? col.render(val, row) : String(val ?? "")}
                   </td>

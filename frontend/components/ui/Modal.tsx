@@ -66,22 +66,22 @@ export function Modal({
       }}
     >
       <div
-        className={`w-full ${widthMap[maxWidth] || "max-w-md"} bg-theme-card border border-theme-border rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 flex flex-col max-h-[90vh] ${className}`}
+        className={`w-full ${widthMap[maxWidth] || "max-w-md"} bg-card border border-border rounded-xl shadow-2xl overflow-hidden animate-in zoom-in-95 duration-150 flex flex-col max-h-[90vh] ${className}`}
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-theme-border bg-theme-surface/30">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border bg-muted/30">
           <div>
             {title && (
-              <h3 className="text-base font-semibold text-theme-text">{title}</h3>
+              <h3 className="text-base font-semibold text-foreground">{title}</h3>
             )}
             {description && (
-              <p className="text-xs text-theme-text-muted mt-0.5">{description}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">{description}</p>
             )}
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="p-1 rounded-lg text-theme-text-muted hover:text-theme-text hover:bg-theme-surface transition-colors cursor-pointer"
+            className="p-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>

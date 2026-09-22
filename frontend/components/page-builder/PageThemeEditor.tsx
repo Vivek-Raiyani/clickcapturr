@@ -21,7 +21,7 @@ export interface PageThemeEditorProps {
  * typography hierarchy, and backdrop media.
  *
  * Fully styled with the application's unified theme design tokens
- * (`theme-surface`, `theme-card`, `theme-border`, `theme-text`, `theme-primary`).
+ * (`muted`, `card`, `border`, `foreground`, `primary`).
  */
 export function PageThemeEditor({
   theme,
@@ -55,11 +55,11 @@ export function PageThemeEditor({
       {activeSection === "template" && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-theme-text-muted font-semibold">
-              <LayoutTemplate className="w-3.5 h-3.5 text-theme-primary" />
+            <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+              <LayoutTemplate className="w-3.5 h-3.5 text-primary" />
               <span>Layout Architecture</span>
             </div>
-            <span className="text-[10px] font-mono text-theme-text-muted">
+            <span className="text-[10px] font-mono text-muted-foreground">
               {templateList.length} styles
             </span>
           </div>
@@ -76,39 +76,39 @@ export function PageThemeEditor({
                   }
                   className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
                     isSelected
-                      ? "bg-theme-primary/15 border-theme-primary text-theme-text shadow-xs ring-1 ring-theme-primary/40"
-                      : "bg-theme-card border-theme-border text-theme-text-muted hover:border-theme-border hover:text-theme-text hover:bg-theme-surface-hover"
+                      ? "bg-primary/15 border-primary text-foreground shadow-xs ring-1 ring-primary/40"
+                      : "bg-card border-border text-muted-foreground hover:border-border hover:text-foreground hover:bg-muted/80"
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1.5">
                     <div className="flex items-center gap-2">
-                      <span className="text-xs font-semibold text-theme-text">
+                      <span className="text-xs font-semibold text-foreground">
                         {tmpl.name}
                       </span>
                       {tmpl.badge && (
-                        <span className="text-[9px] font-mono font-medium px-1.5 py-0.5 rounded-full bg-theme-primary/20 text-theme-primary">
+                        <span className="text-[9px] font-mono font-medium px-1.5 py-0.5 rounded-full bg-primary/20 text-primary">
                           {tmpl.badge}
                         </span>
                       )}
                     </div>
                     {isSelected && (
-                      <div className="w-4 h-4 rounded-full bg-theme-primary text-theme-primary-fg flex items-center justify-center shrink-0">
+                      <div className="w-4 h-4 rounded-full bg-primary text-primary-foreground flex items-center justify-center shrink-0">
                         <Check className="w-2.5 h-2.5 stroke-[3]" />
                       </div>
                     )}
                   </div>
 
-                  <p className="text-[11px] text-theme-text-muted leading-snug mb-2">
+                  <p className="text-[11px] text-muted-foreground leading-snug mb-2">
                     {tmpl.description}
                   </p>
 
-                  <div className="space-y-1 text-[10px] pt-1.5 border-t border-theme-border/60">
-                    <div className="flex items-baseline gap-1 text-theme-text-muted">
-                      <span className="font-semibold text-theme-text/80 shrink-0">Feel:</span>
+                  <div className="space-y-1 text-[10px] pt-1.5 border-t border-border/60">
+                    <div className="flex items-baseline gap-1 text-muted-foreground">
+                      <span className="font-semibold text-foreground/80 shrink-0">Feel:</span>
                       <span className="italic truncate">{tmpl.feel}</span>
                     </div>
-                    <div className="flex items-baseline gap-1 text-theme-text-muted">
-                      <span className="font-semibold text-theme-text/80 shrink-0">Best for:</span>
+                    <div className="flex items-baseline gap-1 text-muted-foreground">
+                      <span className="font-semibold text-foreground/80 shrink-0">Best for:</span>
                       <span className="truncate">{tmpl.bestFor}</span>
                     </div>
                   </div>
@@ -122,13 +122,13 @@ export function PageThemeEditor({
       {/* 2. LOGO & BRAND */}
       {activeSection === "logo" && (
         <div className="space-y-4">
-          <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-theme-text-muted font-semibold">
-            <Shield className="w-3.5 h-3.5 text-theme-primary" />
+          <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+            <Shield className="w-3.5 h-3.5 text-primary" />
             <span>Logo & Header Brand</span>
           </div>
 
           <div>
-            <label className="block text-xs text-theme-text font-medium mb-1.5">
+            <label className="block text-xs text-foreground font-medium mb-1.5">
               Brand Wordmark (Text Logo)
             </label>
             <input
@@ -138,12 +138,12 @@ export function PageThemeEditor({
                 onChange((prev) => ({ ...prev, logoText: e.target.value || null }))
               }
               placeholder="e.g. Zenith Media"
-              className="w-full bg-theme-card border border-theme-border rounded-lg px-3 py-2 text-xs text-theme-text focus:outline-none focus:border-theme-primary transition-colors"
+              className="w-full bg-card border border-border rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:border-primary transition-colors"
             />
           </div>
 
           <div>
-            <label className="block text-xs text-theme-text font-medium mb-1.5">
+            <label className="block text-xs text-foreground font-medium mb-1.5">
               Logo Image URL (Optional)
             </label>
             <input
@@ -153,9 +153,9 @@ export function PageThemeEditor({
                 onChange((prev) => ({ ...prev, logoUrl: e.target.value || null }))
               }
               placeholder="https://..."
-              className="w-full bg-theme-card border border-theme-border rounded-lg px-3 py-2 text-xs text-theme-text focus:outline-none focus:border-theme-primary transition-colors"
+              className="w-full bg-card border border-border rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:border-primary transition-colors"
             />
-            <p className="text-[10px] text-theme-text-muted mt-1">
+            <p className="text-[10px] text-muted-foreground mt-1">
               If set, the logo image will be rendered instead of the text wordmark.
             </p>
           </div>
@@ -165,8 +165,8 @@ export function PageThemeEditor({
       {/* 3. COLOR PALETTES */}
       {activeSection === "colors" && (
         <div className="space-y-4">
-          <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-theme-text-muted font-semibold">
-            <Palette className="w-3.5 h-3.5 text-theme-primary" />
+          <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+            <Palette className="w-3.5 h-3.5 text-primary" />
             <span>Curated Luxury Palettes</span>
           </div>
 
@@ -190,8 +190,8 @@ export function PageThemeEditor({
                   }
                   className={`w-full p-2.5 rounded-xl border flex items-center justify-between text-xs transition-all cursor-pointer ${
                     isSelected
-                      ? "bg-theme-card border-theme-primary text-theme-text shadow-xs"
-                      : "bg-theme-card border-theme-border text-theme-text-muted hover:border-theme-border hover:text-theme-text"
+                      ? "bg-card border-primary text-foreground shadow-xs"
+                      : "bg-card border-border text-muted-foreground hover:border-border hover:text-foreground"
                   }`}
                 >
                   <div className="flex items-center gap-2.5">
@@ -201,21 +201,21 @@ export function PageThemeEditor({
                     />
                     <span>{th.name}</span>
                   </div>
-                  {isSelected && <Check className="w-3.5 h-3.5 text-theme-primary" />}
+                  {isSelected && <Check className="w-3.5 h-3.5 text-primary" />}
                 </button>
               );
             })}
           </div>
 
           {/* Custom Accents */}
-          <div className="pt-3 border-t border-theme-border space-y-3">
-            <span className="text-[11px] font-mono text-theme-text-muted uppercase block font-semibold">
+          <div className="pt-3 border-t border-border space-y-3">
+            <span className="text-[11px] font-mono text-muted-foreground uppercase block font-semibold">
               Custom Colors
             </span>
 
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <label className="block text-[10.5px] text-theme-text-muted mb-1">
+                <label className="block text-[10.5px] text-muted-foreground mb-1">
                   Primary Brand
                 </label>
                 <div className="flex items-center gap-2">
@@ -233,13 +233,13 @@ export function PageThemeEditor({
                     onChange={(e) =>
                       onChange((prev) => ({ ...prev, primaryColor: e.target.value }))
                     }
-                    className="w-full bg-theme-surface border border-theme-border rounded px-2 py-1 text-xs text-theme-text font-mono focus:outline-none focus:border-theme-primary"
+                    className="w-full bg-muted border border-border rounded px-2 py-1 text-xs text-foreground font-mono focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10.5px] text-theme-text-muted mb-1">
+                <label className="block text-[10.5px] text-muted-foreground mb-1">
                   Button Accent
                 </label>
                 <div className="flex items-center gap-2">
@@ -257,7 +257,7 @@ export function PageThemeEditor({
                     onChange={(e) =>
                       onChange((prev) => ({ ...prev, accentColor: e.target.value }))
                     }
-                    className="w-full bg-theme-surface border border-theme-border rounded px-2 py-1 text-xs text-theme-text font-mono focus:outline-none focus:border-theme-primary"
+                    className="w-full bg-muted border border-border rounded px-2 py-1 text-xs text-foreground font-mono focus:outline-none focus:border-primary"
                   />
                 </div>
               </div>
@@ -270,18 +270,18 @@ export function PageThemeEditor({
       {activeSection === "fonts" && (
         <div className="space-y-5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-theme-text-muted font-semibold">
-              <Type className="w-3.5 h-3.5 text-theme-primary" />
+            <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+              <Type className="w-3.5 h-3.5 text-primary" />
               <span>Typography Studio</span>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-theme-primary/10 text-theme-primary border border-theme-primary/20">
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20">
               Live Preview
             </span>
           </div>
 
           {/* Curated Typography Pairings */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-theme-text">
+            <label className="block text-xs font-semibold text-foreground">
               Curated Font Pairings
             </label>
             <div className="grid grid-cols-1 gap-1.5">
@@ -348,25 +348,25 @@ export function PageThemeEditor({
                     }
                     className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                       isPairingActive
-                        ? "bg-theme-primary/15 border-theme-primary text-theme-text shadow-xs ring-1 ring-theme-primary/40"
-                        : "bg-theme-card border-theme-border text-theme-text-muted hover:border-theme-border hover:text-theme-text hover:bg-theme-surface-hover"
+                        ? "bg-primary/15 border-primary text-foreground shadow-xs ring-1 ring-primary/40"
+                        : "bg-card border-border text-muted-foreground hover:border-border hover:text-foreground hover:bg-muted/80"
                     }`}
                   >
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-theme-text">
+                        <span className="text-xs font-semibold text-foreground">
                           {pairing.name}
                         </span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-theme-primary/10 text-theme-primary border border-theme-primary/20">
+                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
                           {pairing.badge}
                         </span>
                       </div>
-                      <div className="text-[10.5px] text-theme-text-muted truncate mt-0.5">
+                      <div className="text-[10.5px] text-muted-foreground truncate mt-0.5">
                         {pairing.headline} + {pairing.body}
                       </div>
                     </div>
                     {isPairingActive && (
-                      <Check className="w-3.5 h-3.5 text-theme-primary shrink-0 ml-2" />
+                      <Check className="w-3.5 h-3.5 text-primary shrink-0 ml-2" />
                     )}
                   </button>
                 );
@@ -375,12 +375,12 @@ export function PageThemeEditor({
           </div>
 
           {/* Headline Font Selector with Real Specimen Cards */}
-          <div className="space-y-2.5 pt-2 border-t border-theme-border">
+          <div className="space-y-2.5 pt-2 border-t border-border">
             <div className="flex items-center justify-between">
-              <label className="block text-xs font-semibold text-theme-text">
+              <label className="block text-xs font-semibold text-foreground">
                 Headline Font
               </label>
-              <span className="text-[10px] font-mono text-theme-primary font-semibold">
+              <span className="text-[10px] font-mono text-primary font-semibold">
                 {theme.fonts.headlineFont}
               </span>
             </div>
@@ -400,34 +400,34 @@ export function PageThemeEditor({
                     }
                     className={`w-full p-3 rounded-xl border text-left transition-all cursor-pointer ${
                       isSelected
-                        ? "bg-theme-primary/15 border-theme-primary text-theme-text shadow-xs ring-1 ring-theme-primary/40"
-                        : "bg-theme-card border-theme-border text-theme-text-muted hover:border-theme-border hover:text-theme-text hover:bg-theme-surface-hover"
+                        ? "bg-primary/15 border-primary text-foreground shadow-xs ring-1 ring-primary/40"
+                        : "bg-card border-border text-muted-foreground hover:border-border hover:text-foreground hover:bg-muted/80"
                     }`}
                   >
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-theme-text">
+                        <span className="text-xs font-semibold text-foreground">
                           {font.name}
                         </span>
-                        <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-theme-surface text-theme-text-muted border border-theme-border">
+                        <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border">
                           {font.category}
                         </span>
                       </div>
                       {isSelected && (
-                        <Check className="w-3.5 h-3.5 text-theme-primary shrink-0" />
+                        <Check className="w-3.5 h-3.5 text-primary shrink-0" />
                       )}
                     </div>
 
                     {/* Real Font Specimen Rendering */}
                     <div
-                      className="text-sm font-semibold tracking-tight text-theme-text truncate my-1"
+                      className="text-sm font-semibold tracking-tight text-foreground truncate my-1"
                       style={{ fontFamily: font.fontFamily }}
                     >
                       {font.previewSample}
                     </div>
 
                     <div
-                      className="text-[11px] text-theme-text-muted tracking-widest uppercase"
+                      className="text-[11px] text-muted-foreground tracking-widest uppercase"
                       style={{ fontFamily: font.fontFamily }}
                     >
                       Aa Bb Gg 123
@@ -439,8 +439,8 @@ export function PageThemeEditor({
           </div>
 
           {/* Headline Weight Controls */}
-          <div className="space-y-1.5 pt-2 border-t border-theme-border">
-            <label className="block text-xs font-semibold text-theme-text">
+          <div className="space-y-1.5 pt-2 border-t border-border">
+            <label className="block text-xs font-semibold text-foreground">
               Headline Weight
             </label>
             <div className="grid grid-cols-4 gap-1.5">
@@ -463,8 +463,8 @@ export function PageThemeEditor({
                     }
                     className={`py-1.5 px-2 rounded-lg text-xs font-medium text-center transition-all cursor-pointer border ${
                       isSelected
-                        ? "bg-theme-primary text-theme-primary-fg border-theme-primary font-bold shadow-xs"
-                        : "bg-theme-card border-theme-border text-theme-text-muted hover:text-theme-text"
+                        ? "bg-primary text-primary-foreground border-primary font-bold shadow-xs"
+                        : "bg-card border-border text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {wt.label}
@@ -475,12 +475,12 @@ export function PageThemeEditor({
           </div>
 
           {/* Body & Form Font */}
-          <div className="space-y-2 pt-2 border-t border-theme-border">
+          <div className="space-y-2 pt-2 border-t border-border">
             <div className="flex items-center justify-between">
-              <label className="block text-xs font-semibold text-theme-text">
+              <label className="block text-xs font-semibold text-foreground">
                 Body & Form Font
               </label>
-              <span className="text-[10px] font-mono text-theme-primary font-semibold">
+              <span className="text-[10px] font-mono text-primary font-semibold">
                 {theme.fonts.formFont}
               </span>
             </div>
@@ -505,28 +505,28 @@ export function PageThemeEditor({
                     }
                     className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
                       isSelected
-                        ? "bg-theme-primary/15 border-theme-primary text-theme-text shadow-xs ring-1 ring-theme-primary/40"
-                        : "bg-theme-card border-theme-border text-theme-text-muted hover:border-theme-border hover:text-theme-text hover:bg-theme-surface-hover"
+                        ? "bg-primary/15 border-primary text-foreground shadow-xs ring-1 ring-primary/40"
+                        : "bg-card border-border text-muted-foreground hover:border-border hover:text-foreground hover:bg-muted/80"
                     }`}
                   >
                     <div className="min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-theme-text">
+                        <span className="text-xs font-semibold text-foreground">
                           {font.name}
                         </span>
-                        <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-theme-surface text-theme-text-muted border border-theme-border">
+                        <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border">
                           {font.category}
                         </span>
                       </div>
                       <div
-                        className="text-[11px] text-theme-text-muted truncate mt-1"
+                        className="text-[11px] text-muted-foreground truncate mt-1"
                         style={{ fontFamily: font.fontFamily }}
                       >
                         Designed for high readability and optimal conversion flow.
                       </div>
                     </div>
                     {isSelected && (
-                      <Check className="w-3.5 h-3.5 text-theme-primary shrink-0 ml-2" />
+                      <Check className="w-3.5 h-3.5 text-primary shrink-0 ml-2" />
                     )}
                   </button>
                 );
@@ -539,8 +539,8 @@ export function PageThemeEditor({
       {/* 5. BACKGROUND */}
       {activeSection === "background" && (
         <div className="space-y-4">
-          <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-theme-text-muted font-semibold">
-            <ImageIcon className="w-3.5 h-3.5 text-theme-primary" />
+          <div className="flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">
+            <ImageIcon className="w-3.5 h-3.5 text-primary" />
             <span>Full-Page Background</span>
           </div>
 
@@ -550,8 +550,8 @@ export function PageThemeEditor({
               onClick={() => onChange((prev) => ({ ...prev, background: null }))}
               className={`p-2.5 rounded-xl border text-xs font-medium cursor-pointer transition-colors ${
                 !theme.background
-                  ? "bg-theme-primary/15 border-theme-primary text-theme-text shadow-xs"
-                  : "bg-theme-card border-theme-border text-theme-text-muted hover:text-theme-text"
+                  ? "bg-primary/15 border-primary text-foreground shadow-xs"
+                  : "bg-card border-border text-muted-foreground hover:text-foreground"
               }`}
             >
               Solid Canvas
@@ -570,8 +570,8 @@ export function PageThemeEditor({
               }
               className={`p-2.5 rounded-xl border text-xs font-medium cursor-pointer transition-colors ${
                 theme.background
-                  ? "bg-theme-primary/15 border-theme-primary text-theme-text shadow-xs"
-                  : "bg-theme-card border-theme-border text-theme-text-muted hover:text-theme-text"
+                  ? "bg-primary/15 border-primary text-foreground shadow-xs"
+                  : "bg-card border-border text-muted-foreground hover:text-foreground"
               }`}
             >
               Ambient Image
@@ -581,7 +581,7 @@ export function PageThemeEditor({
           {theme.background && (
             <div className="space-y-3 pt-2">
               <div>
-                <label className="block text-xs text-theme-text font-medium mb-1">
+                <label className="block text-xs text-foreground font-medium mb-1">
                   Background Media URL
                 </label>
                 <input
@@ -595,12 +595,12 @@ export function PageThemeEditor({
                         : null,
                     }))
                   }
-                  className="w-full bg-theme-card border border-theme-border rounded-lg px-2.5 py-1.5 text-xs text-theme-text focus:outline-none focus:border-theme-primary"
+                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
                 />
               </div>
 
               <div>
-                <label className="block text-xs text-theme-text font-medium mb-1">
+                <label className="block text-xs text-foreground font-medium mb-1">
                   Darkness Overlay: {Math.round((theme.background.overlay ?? 0.5) * 100)}%
                 </label>
                 <input

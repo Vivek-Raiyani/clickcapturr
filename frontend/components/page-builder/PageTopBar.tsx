@@ -50,18 +50,18 @@ export function PageTopBar({
   onOpenExportModal,
 }: PageTopBarProps) {
   return (
-    <header className="h-14 border-b border-theme-border bg-theme-surface flex items-center justify-between px-4 z-30 shrink-0 select-none">
+    <header className="h-14 border-b border-border bg-muted flex items-center justify-between px-4 z-30 shrink-0 select-none">
       {/* Left: Back Link & Page Title */}
       <div className="flex items-center gap-3 min-w-0">
         <Link
           href={backHref}
-          className="p-1.5 rounded-lg text-theme-text-muted hover:text-theme-text hover:bg-theme-surface-hover transition-colors"
+          className="p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/80 transition-colors"
           title="Back"
         >
           <ArrowLeft className="w-4 h-4" />
         </Link>
 
-        <div className="h-4 w-px bg-theme-border" />
+        <div className="h-4 w-px bg-border" />
 
         <div className="flex items-center gap-2 min-w-0">
           <input
@@ -69,19 +69,19 @@ export function PageTopBar({
             value={title}
             onChange={(e) => onChangeTitle(e.target.value)}
             placeholder="Page Title"
-            className="bg-transparent font-medium text-xs sm:text-sm text-theme-text focus:outline-none focus:bg-theme-card px-2 py-1 rounded transition-colors border border-transparent focus:border-theme-border max-w-[180px] sm:max-w-[260px] truncate"
+            className="bg-transparent font-medium text-xs sm:text-sm text-foreground focus:outline-none focus:bg-card px-2 py-1 rounded transition-colors border border-transparent focus:border-border max-w-[180px] sm:max-w-[260px] truncate"
           />
           {slug && (
-            <span className="hidden lg:inline-block text-[11px] font-mono text-theme-text-muted">
+            <span className="hidden lg:inline-block text-[11px] font-mono text-muted-foreground">
               (/p/{slug})
             </span>
           )}
         </div>
 
-        <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-theme-text-muted bg-theme-card border border-theme-border px-2.5 py-0.5 rounded-full shrink-0">
+        <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-muted-foreground bg-card border border-border px-2.5 py-0.5 rounded-full shrink-0">
           <span
             className={`w-2 h-2 rounded-full ${
-              savedSuccess ? "bg-emerald-400" : "bg-theme-primary"
+              savedSuccess ? "bg-emerald-400" : "bg-primary"
             }`}
           />
           <span className="font-mono">
@@ -91,16 +91,16 @@ export function PageTopBar({
       </div>
 
       {/* Center: AI Presets */}
-      <div className="hidden md:flex items-center gap-1.5 bg-theme-card/90 border border-theme-border px-2.5 py-1 rounded-xl shadow-xs">
-        <span className="text-[11px] text-theme-text-muted font-medium mr-1 flex items-center gap-1">
-          <Sparkles className="w-3 h-3 text-theme-primary" /> AI Presets:
+      <div className="hidden md:flex items-center gap-1.5 bg-card/90 border border-border px-2.5 py-1 rounded-xl shadow-xs">
+        <span className="text-[11px] text-muted-foreground font-medium mr-1 flex items-center gap-1">
+          <Sparkles className="w-3 h-3 text-primary" /> AI Presets:
         </span>
         {Object.keys(SAMPLE_AI_PRESETS).map((key) => (
           <button
             key={key}
             type="button"
             onClick={() => onSelectAIPreset(key)}
-            className="px-2 py-0.5 text-[11px] rounded-lg bg-theme-surface hover:bg-theme-surface-hover text-theme-text-muted hover:text-theme-text border border-theme-border-subtle transition-colors cursor-pointer capitalize font-sans"
+            className="px-2 py-0.5 text-[11px] rounded-lg bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground border border-border/50 transition-colors cursor-pointer capitalize font-sans"
           >
             {key.split("-")[1] || key}
           </button>
@@ -114,8 +114,8 @@ export function PageTopBar({
           onClick={onToggleSuccessPreview}
           className={`px-3 py-1.5 rounded-xl text-xs font-medium border flex items-center gap-1.5 transition-all cursor-pointer ${
             showSuccessPreview
-              ? "bg-theme-primary/15 border-theme-primary text-theme-primary shadow-xs"
-              : "bg-theme-card border-theme-border text-theme-text-muted hover:text-theme-text hover:bg-theme-surface-hover"
+              ? "bg-primary/15 border-primary text-primary shadow-xs"
+              : "bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted/80"
           }`}
         >
           <Eye className="w-3.5 h-3.5" />
@@ -128,7 +128,7 @@ export function PageTopBar({
           <Link
             href={`/p/${slug}`}
             target="_blank"
-            className="hidden sm:flex items-center gap-1 text-xs text-theme-text-muted hover:text-theme-text px-2 py-1.5 rounded-lg hover:bg-theme-surface-hover transition-colors"
+            className="hidden sm:flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded-lg hover:bg-muted/80 transition-colors"
           >
             <ExternalLink className="w-3.5 h-3.5" />
           </Link>
@@ -138,7 +138,7 @@ export function PageTopBar({
           <button
             type="button"
             onClick={onOpenExportModal}
-            className="px-4 py-1.5 rounded-xl bg-theme-primary hover:bg-theme-primary-hover text-theme-primary-fg font-semibold text-xs transition-all shadow-md shadow-theme-primary/20 cursor-pointer"
+            className="px-4 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs transition-all shadow-md shadow-primary/20 cursor-pointer"
           >
             Export Page
           </button>
@@ -147,7 +147,7 @@ export function PageTopBar({
             type="button"
             onClick={onSave}
             disabled={saving}
-            className="px-4 py-1.5 rounded-xl bg-theme-primary hover:bg-theme-primary-hover text-theme-primary-fg font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md shadow-theme-primary/20 disabled:opacity-50 cursor-pointer"
+            className="px-4 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs transition-all flex items-center gap-1.5 shadow-md shadow-primary/20 disabled:opacity-50 cursor-pointer"
           >
             {saving ? (
               <>
@@ -172,7 +172,7 @@ export function PageTopBar({
           <button
             type="button"
             onClick={onDeletePage}
-            className="p-2 rounded-xl text-theme-text-muted hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
+            className="p-2 rounded-xl text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer"
             title="Delete Page"
           >
             <Trash2 className="w-4 h-4" />

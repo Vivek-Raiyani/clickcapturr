@@ -21,15 +21,15 @@ export function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "inline-flex items-center justify-center font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-theme-primary/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none select-none cursor-pointer";
+    "inline-flex items-center justify-center font-medium transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none select-none cursor-pointer";
 
   const variantStyles = {
     primary:
-      "bg-theme-primary text-theme-primary-fg hover:bg-theme-primary-hover shadow-sm active:scale-[0.98]",
+      "bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm active:scale-[0.98]",
     secondary:
-      "bg-theme-surface text-theme-text hover:bg-theme-surface-hover border border-theme-border shadow-xs active:scale-[0.98]",
+      "bg-muted text-foreground hover:bg-muted/80 border border-border shadow-xs active:scale-[0.98]",
     ghost:
-      "bg-transparent text-theme-text-muted hover:text-theme-text hover:bg-theme-surface-hover",
+      "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/80",
     danger:
       "bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/30 active:scale-[0.98]",
   };

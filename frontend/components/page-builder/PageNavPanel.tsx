@@ -46,35 +46,35 @@ function NavButton({
       onClick={onClick}
       className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-left transition-all duration-150 cursor-pointer ${
         active
-          ? "bg-theme-primary/15 border-theme-primary/70 text-theme-text shadow-xs"
-          : "bg-theme-card border-theme-border text-theme-text-muted hover:bg-theme-surface-hover hover:border-theme-border hover:text-theme-text"
+          ? "bg-primary/15 border-primary/70 text-foreground shadow-xs"
+          : "bg-card border-border text-muted-foreground hover:bg-muted/80 hover:border-border hover:text-foreground"
       }`}
     >
       <div className="flex items-center gap-2.5 min-w-0">
         <div
           className={`p-1.5 rounded-lg shrink-0 ${
             active
-              ? "bg-theme-primary text-theme-primary-fg shadow-xs font-semibold"
-              : "bg-theme-surface text-theme-text-muted"
+              ? "bg-primary text-primary-foreground shadow-xs font-semibold"
+              : "bg-muted text-muted-foreground"
           }`}
         >
           {icon}
         </div>
         <div className="min-w-0">
           <div className="text-xs font-medium truncate leading-tight flex items-center gap-1.5">
-            <span className={active ? "text-theme-text font-semibold" : "text-theme-text"}>
+            <span className={active ? "text-foreground font-semibold" : "text-foreground"}>
               {title}
             </span>
             {badge && (
-              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-theme-primary/20 text-theme-primary font-normal">
+              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-primary/20 text-primary font-normal">
                 {badge}
               </span>
             )}
           </div>
-          <div className="text-[10px] text-theme-text-muted truncate mt-0.5">{subtitle}</div>
+          <div className="text-[10px] text-muted-foreground truncate mt-0.5">{subtitle}</div>
         </div>
       </div>
-      {active && <Check className="w-3.5 h-3.5 text-theme-primary shrink-0 ml-1" />}
+      {active && <Check className="w-3.5 h-3.5 text-primary shrink-0 ml-1" />}
     </button>
   );
 }
@@ -98,9 +98,9 @@ export function PageNavPanel({
   state,
 }: PageNavPanelProps) {
   return (
-    <aside className="w-60 sm:w-64 border-r border-theme-border bg-theme-surface flex flex-col shrink-0">
+    <aside className="w-60 sm:w-64 border-r border-border bg-muted flex flex-col shrink-0">
       {/* Tab Switcher: 2 primary tabs (Content and Design) */}
-      <div className="grid grid-cols-2 p-1.5 border-b border-theme-border gap-1 bg-theme-bg">
+      <div className="grid grid-cols-2 p-1.5 border-b border-border gap-1 bg-background">
         <button
           type="button"
           onClick={() => {
@@ -109,8 +109,8 @@ export function PageNavPanel({
           }}
           className={`py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
             activeTab === "content"
-              ? "bg-theme-card text-theme-text shadow-xs"
-              : "text-theme-text-muted hover:text-theme-text"
+              ? "bg-card text-foreground shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           Content
@@ -123,8 +123,8 @@ export function PageNavPanel({
           }}
           className={`py-1.5 text-xs font-semibold rounded-lg transition-all cursor-pointer ${
             activeTab === "design"
-              ? "bg-theme-card text-theme-text shadow-xs"
-              : "text-theme-text-muted hover:text-theme-text"
+              ? "bg-card text-foreground shadow-xs"
+              : "text-muted-foreground hover:text-foreground"
           }`}
         >
           Design
@@ -136,7 +136,7 @@ export function PageNavPanel({
         {activeTab === "content" && (
           <>
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider text-theme-text-muted font-semibold px-2 mb-1.5">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold px-2 mb-1.5">
                 PAGE COPY
               </div>
               <div className="space-y-1">
@@ -172,7 +172,7 @@ export function PageNavPanel({
             </div>
 
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider text-theme-text-muted font-semibold px-2 mb-1.5">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold px-2 mb-1.5">
                 LEAD CAPTURE FORM
               </div>
               <div className="space-y-1">
@@ -188,7 +188,7 @@ export function PageNavPanel({
             </div>
 
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider text-theme-text-muted font-semibold px-2 mb-1.5">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold px-2 mb-1.5">
                 OFFER & CONTENT
               </div>
               <div className="space-y-1">
@@ -231,7 +231,7 @@ export function PageNavPanel({
             </div>
 
             <div>
-              <div className="text-[10px] font-mono uppercase tracking-wider text-theme-text-muted font-semibold px-2 mb-1.5">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold px-2 mb-1.5">
                 MONETIZE
               </div>
               <div className="space-y-1">
@@ -250,7 +250,7 @@ export function PageNavPanel({
 
         {activeTab === "design" && (
           <div>
-            <div className="text-[10px] font-mono uppercase tracking-wider text-theme-text-muted font-semibold px-2 mb-1.5">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold px-2 mb-1.5">
               THEME & STYLING
             </div>
             <div className="space-y-1">
@@ -295,9 +295,9 @@ export function PageNavPanel({
       </div>
 
       {/* Footer Info */}
-      <div className="p-3 border-t border-theme-border text-[11px] text-theme-text-muted flex items-center justify-between">
+      <div className="p-3 border-t border-border text-[11px] text-muted-foreground flex items-center justify-between">
         <span>Page Builder</span>
-        <span className="font-mono text-theme-text-muted">v3.0</span>
+        <span className="font-mono text-muted-foreground">v3.0</span>
       </div>
     </aside>
   );

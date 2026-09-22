@@ -280,22 +280,22 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
   return (
     <div className="space-y-6">
       {/* Top Header Bar */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-theme-border">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
           <div className="flex items-center gap-3">
             <button
               onClick={toggleSidebar}
               title={isCollapsed ? "Expand navigation sidebar" : "Collapse to icon strip"}
-              className="hidden md:flex p-1.5 rounded-lg text-theme-text-muted hover:text-theme-text hover:bg-theme-surface border border-theme-border transition-colors cursor-pointer"
+              className="hidden md:flex p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border border-border transition-colors cursor-pointer"
             >
               {isCollapsed ? (
-                <PanelLeftOpen className="w-4 h-4 text-theme-primary" />
+                <PanelLeftOpen className="w-4 h-4 text-primary" />
               ) : (
                 <PanelLeftClose className="w-4 h-4" />
               )}
             </button>
 
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-theme-text">
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">
               {page.title}
             </h1>
             <button
@@ -310,13 +310,13 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
             </button>
           </div>
 
-          <div className="flex items-center gap-2 mt-1.5 text-xs text-theme-text-muted">
-            <span className="font-mono bg-theme-surface px-2 py-0.5 rounded border border-theme-border text-theme-text">
+          <div className="flex items-center gap-2 mt-1.5 text-xs text-muted-foreground">
+            <span className="font-mono bg-muted px-2 py-0.5 rounded border border-border text-foreground">
               {shortLinkUrl}
             </span>
             <button
               onClick={handleCopyUrl}
-              className="p-1 rounded hover:text-theme-text hover:bg-theme-surface transition-colors cursor-pointer"
+              className="p-1 rounded hover:text-foreground hover:bg-muted transition-colors cursor-pointer"
               title="Copy link"
             >
               {copiedPageUrl ? (
@@ -328,7 +328,7 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
             <Link
               href={shortLinkUrl}
               target="_blank"
-              className="hover:text-theme-primary transition-colors flex items-center gap-1 font-medium ml-1"
+              className="hover:text-primary transition-colors flex items-center gap-1 font-medium ml-1"
             >
               <span>Visit Page</span>
               <ExternalLink className="w-3 h-3" />
@@ -337,13 +337,13 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
         </div>
 
         {/* Tab Switcher */}
-        <div className="flex items-center bg-theme-card border border-theme-border rounded-lg p-1 shadow-xs">
+        <div className="flex items-center bg-card border border-border rounded-lg p-1 shadow-xs">
           <button
             onClick={() => setActiveTab("overview")}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
               activeTab === "overview"
-                ? "bg-theme-surface text-theme-text shadow-xs"
-                : "text-theme-text-muted hover:text-theme-text"
+                ? "bg-muted text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Settings className="w-3.5 h-3.5" />
@@ -354,8 +354,8 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
             onClick={() => setActiveTab("builder")}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
               activeTab === "builder"
-                ? "bg-theme-primary/10 text-theme-primary font-semibold border border-theme-primary/30"
-                : "text-theme-text-muted hover:text-theme-text"
+                ? "bg-primary/10 text-primary font-semibold border border-primary/30"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Palette className="w-3.5 h-3.5" />
@@ -366,8 +366,8 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
             onClick={() => setActiveTab("leads")}
             className={`flex items-center gap-2 px-3.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer ${
               activeTab === "leads"
-                ? "bg-theme-surface text-theme-text shadow-xs"
-                : "text-theme-text-muted hover:text-theme-text"
+                ? "bg-muted text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Users className="w-3.5 h-3.5" />
@@ -384,30 +384,30 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
           {/* ============================================================== */}
           <div className="xl:col-span-5 space-y-6">
             {/* Auto Page Link & Scannable QR */}
-            <div className="bg-theme-card border border-theme-border rounded-xl p-5 shadow-xs space-y-4">
+            <div className="bg-card border border-border rounded-xl p-5 shadow-xs space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-xs font-semibold text-theme-primary uppercase tracking-wider">
+                <div className="flex items-center gap-2 text-xs font-semibold text-primary uppercase tracking-wider">
                   <QrIcon className="w-4 h-4" />
                   <span>Target Link & QR Code</span>
                 </div>
-                <span className="text-[11px] bg-theme-primary/10 text-theme-primary px-2 py-0.5 rounded-full font-medium">
+                <span className="text-[11px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">
                   Auto-Generated
                 </span>
               </div>
 
               {/* URL Display */}
-              <div className="p-3 bg-theme-surface rounded-lg border border-theme-border flex items-center justify-between gap-2">
+              <div className="p-3 bg-muted rounded-lg border border-border flex items-center justify-between gap-2">
                 <div className="min-w-0 flex-1">
-                  <span className="text-[10px] uppercase tracking-wider text-theme-text-muted block">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground block">
                     Public Destination URL
                   </span>
-                  <span className="text-xs font-mono text-theme-text truncate block">
+                  <span className="text-xs font-mono text-foreground truncate block">
                     {shortLinkUrl}
                   </span>
                 </div>
                 <button
                   onClick={handleCopyUrl}
-                  className="p-1.5 rounded-md text-theme-text-muted hover:text-theme-text hover:bg-theme-card border border-theme-border transition-colors cursor-pointer shrink-0"
+                  className="p-1.5 rounded-md text-muted-foreground hover:text-foreground hover:bg-card border border-border transition-colors cursor-pointer shrink-0"
                   title="Copy permanent link"
                 >
                   {copiedPageUrl ? (
@@ -472,14 +472,14 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
                 type="area"
                 height={260}
                 headerRight={
-                  <div className="flex items-center bg-theme-surface border border-theme-border rounded-lg p-0.5 text-xs shadow-xs">
+                  <div className="flex items-center bg-muted border border-border rounded-lg p-0.5 text-xs shadow-xs">
                     <button
                       type="button"
                       onClick={() => setDeviceFilter("all")}
                       className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
                         deviceFilter === "all"
-                          ? "bg-theme-card text-theme-text shadow-xs"
-                          : "text-theme-text-muted hover:text-theme-text"
+                          ? "bg-card text-foreground shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       All Devices
@@ -489,8 +489,8 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
                       onClick={() => setDeviceFilter("mobile")}
                       className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
                         deviceFilter === "mobile"
-                          ? "bg-theme-card text-theme-primary shadow-xs"
-                          : "text-theme-text-muted hover:text-theme-text"
+                          ? "bg-card text-primary shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       <Smartphone className="w-3 h-3" />
@@ -501,8 +501,8 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
                       onClick={() => setDeviceFilter("desktop")}
                       className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
                         deviceFilter === "desktop"
-                          ? "bg-theme-card text-blue-400 shadow-xs"
-                          : "text-theme-text-muted hover:text-theme-text"
+                          ? "bg-card text-blue-400 shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       <Laptop className="w-3 h-3" />
@@ -513,8 +513,8 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
                       onClick={() => setDeviceFilter("tablet")}
                       className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
                         deviceFilter === "tablet"
-                          ? "bg-theme-card text-emerald-400 shadow-xs"
-                          : "text-theme-text-muted hover:text-theme-text"
+                          ? "bg-card text-emerald-400 shadow-xs"
+                          : "text-muted-foreground hover:text-foreground"
                       }`}
                     >
                       <Tablet className="w-3 h-3" />
@@ -526,15 +526,15 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
             </div>
 
             {/* Location / Country Pie Chart */}
-            <div className="bg-theme-card border border-theme-border rounded-xl p-5 shadow-xs space-y-3">
-              <div className="flex items-center justify-between pb-3 border-b border-theme-border">
+            <div className="bg-card border border-border rounded-xl p-5 shadow-xs space-y-3">
+              <div className="flex items-center justify-between pb-3 border-b border-border">
                 <div className="flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-theme-primary" />
-                  <h3 className="text-sm font-semibold text-theme-text">
+                  <Globe className="w-4 h-4 text-primary" />
+                  <h3 className="text-sm font-semibold text-foreground">
                     Scan Geography & Top Locations
                   </h3>
                 </div>
-                <span className="text-xs text-theme-text-muted">
+                <span className="text-xs text-muted-foreground">
                   {locationList.length} Active {locationList.length === 1 ? "Region" : "Regions"}
                 </span>
               </div>
@@ -550,7 +550,7 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
 
       {/* Tab 2: Visual Builder — Edge to edge display */}
       {activeTab === "builder" && (
-        <div className="-mx-2 -my-2 md:-mx-4 md:-my-3 border border-theme-border rounded-xl overflow-hidden bg-theme-bg min-h-[calc(100vh-140px)]">
+        <div className="-mx-2 -my-2 md:-mx-4 md:-my-3 border border-border rounded-xl overflow-hidden bg-background min-h-[calc(100vh-140px)]">
           <PageBuilder
             mode="production"
             initialState={builderInitialState}
@@ -567,8 +567,8 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <h2 className="text-base font-semibold text-theme-text">Captured Leads</h2>
-              <p className="text-xs text-theme-text-muted mt-0.5">
+              <h2 className="text-base font-semibold text-foreground">Captured Leads</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 Viewer responses collected through custom form fields on this page.
               </p>
             </div>
@@ -586,43 +586,43 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
           </div>
 
           {leadsLoading ? (
-            <div className="h-40 bg-theme-card border border-theme-border rounded-xl animate-pulse" />
+            <div className="h-40 bg-card border border-border rounded-xl animate-pulse" />
           ) : submissions.length === 0 ? (
-            <div className="bg-theme-card border border-theme-border rounded-xl p-10 text-center">
-              <Users className="w-8 h-8 text-theme-text-muted mx-auto mb-2 opacity-50" />
-              <p className="text-sm text-theme-text-muted">No leads collected on this page yet.</p>
-              <p className="text-xs text-theme-text-muted mt-1">
+            <div className="bg-card border border-border rounded-xl p-10 text-center">
+              <Users className="w-8 h-8 text-muted-foreground mx-auto mb-2 opacity-50" />
+              <p className="text-sm text-muted-foreground">No leads collected on this page yet.</p>
+              <p className="text-xs text-muted-foreground mt-1">
                 Ensure your page has a form section enabled in the Visual Builder.
               </p>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-xl border border-theme-border bg-theme-card">
+            <div className="overflow-x-auto rounded-xl border border-border bg-card">
               <table className="w-full text-left text-sm border-collapse">
                 <thead>
-                  <tr className="border-b border-theme-border bg-theme-surface/40">
-                    <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-theme-text-muted whitespace-nowrap">
+                  <tr className="border-b border-border bg-muted/40">
+                    <th className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap">
                       Date Submitted
                     </th>
                     {leadFields.map((field) => (
                       <th
                         key={field}
-                        className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-theme-text-muted whitespace-nowrap"
+                        className="py-3 px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap"
                       >
                         {field}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-theme-border">
+                <tbody className="divide-y divide-border">
                   {submissions.map((sub) => (
-                    <tr key={sub.id} className="hover:bg-theme-surface/30 transition-colors">
-                      <td className="py-3.5 px-4 text-xs text-theme-text-muted whitespace-nowrap">
+                    <tr key={sub.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="py-3.5 px-4 text-xs text-muted-foreground whitespace-nowrap">
                         {new Date(sub.submittedAt).toLocaleDateString(undefined, {
                           month: "short",
                           day: "numeric",
                           year: "numeric",
                         })}{" "}
-                        <span className="text-theme-text-muted/60">
+                        <span className="text-muted-foreground/60">
                           {new Date(sub.submittedAt).toLocaleTimeString(undefined, {
                             hour: "2-digit",
                             minute: "2-digit",
@@ -638,19 +638,19 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
                         return (
                           <td
                             key={field}
-                            className="py-3.5 px-4 text-xs text-theme-text align-middle max-w-xs truncate"
+                            className="py-3.5 px-4 text-xs text-foreground align-middle max-w-xs truncate"
                           >
                             {strVal.trim() !== "" ? (
                               isEmail ? (
                                 <a
                                   href={`mailto:${strVal}`}
-                                  className="inline-flex items-center gap-1.5 text-theme-primary hover:underline font-medium"
+                                  className="inline-flex items-center gap-1.5 text-primary hover:underline font-medium"
                                 >
                                   <Mail className="w-3.5 h-3.5 shrink-0" />
                                   <span>{strVal}</span>
                                 </a>
                               ) : (
-                                <span className="font-medium text-theme-text">{strVal}</span>
+                                <span className="font-medium text-foreground">{strVal}</span>
                               )
                             ) : (
                               <span className="text-zinc-600">—</span>
@@ -676,14 +676,14 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
         maxWidth="xl"
       >
         <div className="space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-theme-border">
+          <div className="flex items-center justify-between pb-3 border-b border-border">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setPreviewDevice("mobile")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors ${
                   previewDevice === "mobile"
-                    ? "bg-theme-surface border border-theme-primary text-theme-primary"
-                    : "border border-theme-border text-theme-text-muted hover:text-theme-text"
+                    ? "bg-muted border border-primary text-primary"
+                    : "border border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Smartphone className="w-3.5 h-3.5" />
@@ -694,8 +694,8 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
                 onClick={() => setPreviewDevice("desktop")}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors ${
                   previewDevice === "desktop"
-                    ? "bg-theme-surface border border-theme-primary text-theme-primary"
-                    : "border border-theme-border text-theme-text-muted hover:text-theme-text"
+                    ? "bg-muted border border-primary text-primary"
+                    : "border border-border text-muted-foreground hover:text-foreground"
                 }`}
               >
                 <Laptop className="w-3.5 h-3.5" />
@@ -706,7 +706,7 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
             <Link
               href={publicPageUrl}
               target="_blank"
-              className="text-xs text-theme-primary hover:underline flex items-center gap-1 font-medium"
+              className="text-xs text-primary hover:underline flex items-center gap-1 font-medium"
             >
               <span>Open in New Tab</span>
               <ExternalLink className="w-3 h-3" />
@@ -714,7 +714,7 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
           </div>
 
           <div
-            className={`mx-auto transition-all duration-200 overflow-y-auto max-h-[70vh] rounded-xl border border-theme-border bg-theme-bg p-2 ${
+            className={`mx-auto transition-all duration-200 overflow-y-auto max-h-[70vh] rounded-xl border border-border bg-background p-2 ${
               previewDevice === "mobile" ? "max-w-sm" : "max-w-full"
             }`}
           >

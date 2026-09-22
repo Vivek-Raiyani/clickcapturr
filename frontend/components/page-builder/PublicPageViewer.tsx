@@ -55,7 +55,7 @@ export function PublicPageViewer({ page, formFields = [] }: PublicPageViewerProp
   };
 
   return (
-    <div className="min-h-screen w-full bg-theme-bg text-theme-text">
+    <div className="min-h-screen w-full bg-background text-foreground">
       <PagePreview
         state={state}
         onUpdateState={setState}

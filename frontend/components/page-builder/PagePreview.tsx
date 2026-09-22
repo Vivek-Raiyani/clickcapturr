@@ -307,11 +307,11 @@ export function PagePreview({
   };
 
   return (
-    <main className={`flex-1 overflow-y-auto bg-theme-bg flex flex-col items-center relative ${isPublicView ? "" : "p-4 sm:p-6 lg:p-8"}`}>
+    <main className={`flex-1 overflow-y-auto bg-background flex flex-col items-center relative ${isPublicView ? "" : "p-4 sm:p-6 lg:p-8"}`}>
       {/* AI Page Generation Bar (Top of canvas) */}
       {!isPublicView && (
-        <div className="w-full max-w-2xl mb-6 bg-theme-surface/90 border border-theme-border backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-2xl flex items-center gap-2">
-          <div className="p-2 rounded-xl bg-theme-primary/10 text-theme-primary shrink-0">
+        <div className="w-full max-w-2xl mb-6 bg-muted/90 border border-border backdrop-blur-md rounded-2xl p-2 sm:p-2.5 shadow-2xl flex items-center gap-2">
+          <div className="p-2 rounded-xl bg-primary/10 text-primary shrink-0">
             <Sparkles className="w-4 h-4" />
           </div>
           <input
@@ -319,7 +319,7 @@ export function PagePreview({
             value={aiPrompt}
             onChange={(e) => onAiPromptChange(e.target.value)}
             placeholder="Paste your topic or value proposition to auto-write this page..."
-            className="flex-1 bg-transparent text-xs sm:text-sm text-theme-text focus:outline-none placeholder:text-theme-text-muted min-w-0"
+            className="flex-1 bg-transparent text-xs sm:text-sm text-foreground focus:outline-none placeholder:text-muted-foreground min-w-0"
             onKeyDown={(e) => {
               if (e.key === "Enter") onAiGenerate();
             }}
@@ -328,7 +328,7 @@ export function PagePreview({
             type="button"
             onClick={onAiGenerate}
             disabled={isAiGenerating}
-            className="px-3.5 py-1.5 rounded-xl bg-theme-primary hover:bg-theme-primary-hover text-theme-primary-fg font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 shadow-md shadow-theme-primary/20 disabled:opacity-50 cursor-pointer"
+            className="px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground font-semibold text-xs transition-all flex items-center gap-1.5 shrink-0 shadow-md shadow-primary/20 disabled:opacity-50 cursor-pointer"
           >
             {isAiGenerating ? (
               <>
@@ -344,14 +344,14 @@ export function PagePreview({
 
       {/* Device Switcher */}
       {!isPublicView && (
-        <div className="mb-4 flex items-center gap-1 bg-theme-surface border border-theme-border p-1 rounded-xl shadow-md">
+        <div className="mb-4 flex items-center gap-1 bg-muted border border-border p-1 rounded-xl shadow-md">
           <button
             type="button"
             onClick={() => onDeviceModeChange("desktop")}
             className={`px-3 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
               deviceMode === "desktop"
-                ? "bg-theme-card text-theme-text shadow-xs"
-                : "text-theme-text-muted hover:text-theme-text"
+                ? "bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Monitor className="w-3.5 h-3.5" />
@@ -362,8 +362,8 @@ export function PagePreview({
             onClick={() => onDeviceModeChange("tablet")}
             className={`px-3 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
               deviceMode === "tablet"
-                ? "bg-theme-card text-theme-text shadow-xs"
-                : "text-theme-text-muted hover:text-theme-text"
+                ? "bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Tablet className="w-3.5 h-3.5" />
@@ -374,8 +374,8 @@ export function PagePreview({
             onClick={() => onDeviceModeChange("mobile")}
             className={`px-3 py-1 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
               deviceMode === "mobile"
-                ? "bg-theme-card text-theme-text shadow-xs"
-                : "text-theme-text-muted hover:text-theme-text"
+                ? "bg-card text-foreground shadow-xs"
+                : "text-muted-foreground hover:text-foreground"
             }`}
           >
             <Smartphone className="w-3.5 h-3.5" />
@@ -388,8 +388,8 @@ export function PagePreview({
       <div
         className={`w-full transition-all duration-300 ${
           isPublicView
-            ? "min-h-screen bg-theme-bg"
-            : `shadow-2xl rounded-2xl overflow-hidden border border-theme-border bg-theme-card flex flex-col ${
+            ? "min-h-screen bg-background"
+            : `shadow-2xl rounded-2xl overflow-hidden border border-border bg-card flex flex-col ${
                 deviceMode === "mobile"
                   ? "max-w-[390px] min-h-[844px]"
                   : deviceMode === "tablet"
@@ -400,18 +400,18 @@ export function PagePreview({
       >
         {/* Browser Chrome Bar */}
         {!isPublicView && (
-          <div className="h-9 bg-theme-surface border-b border-theme-border px-3 flex items-center justify-between shrink-0 select-none">
+          <div className="h-9 bg-muted border-b border-border px-3 flex items-center justify-between shrink-0 select-none">
             <div className="flex items-center gap-1.5">
               <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
               <div className="w-2.5 h-2.5 rounded-full bg-amber-500/80" />
               <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/80" />
             </div>
 
-            <div className="bg-theme-bg border border-theme-border-subtle rounded-md px-3 py-0.5 text-[11px] font-mono text-theme-text-muted truncate max-w-xs sm:max-w-md">
+            <div className="bg-background border border-border/50 rounded-md px-3 py-0.5 text-[11px] font-mono text-muted-foreground truncate max-w-xs sm:max-w-md">
               https://vuemagnet.com/p/{slug || "my-page"}
             </div>
 
-            <div className="w-16 text-right text-[10px] font-mono text-theme-text-muted">
+            <div className="w-16 text-right text-[10px] font-mono text-muted-foreground">
               {deviceMode === "mobile"
                 ? "390 × 844"
                 : deviceMode === "tablet"

@@ -53,7 +53,7 @@ export interface ColorThemeOption {
 
 export const COLOR_THEMES: ColorThemeOption[] = [
   {
-    id: "app-theme-gold",
+    id: "app-primary",
     name: "VueMagnet Luxury (App Theme)",
     primary: "#f59e0b",
     accent: "#fbbf24",

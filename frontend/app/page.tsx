@@ -2,14 +2,14 @@ export default function Home() {
   return (
     <div className="min-h-screen font-sans bg-background text-foreground flex flex-col">
       {/* Navigation */}
-      <header className="border-b border-light-border px-8 py-6 flex justify-between items-center">
+      <header className="border-b border-border px-8 py-6 flex justify-between items-center">
         <div className="text-xl font-bold tracking-tight font-serif">vcarrd.</div>
         <nav className="flex gap-6 text-sm font-medium">
-          <a href="#" className="hover:text-warm-gray transition-colors">Features</a>
-          <a href="#" className="hover:text-warm-gray transition-colors">Pricing</a>
-          <a href="#" className="hover:text-warm-gray transition-colors">About</a>
+          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Features</a>
+          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">Pricing</a>
+          <a href="#" className="text-muted-foreground hover:text-foreground transition-colors">About</a>
         </nav>
-        <button className="bg-black text-soft-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-charcoal transition-colors">
+        <button className="bg-foreground text-background px-5 py-2.5 rounded-full text-sm font-medium hover:opacity-90 transition-opacity">
           Sign In
         </button>
       </header>
@@ -17,18 +17,18 @@ export default function Home() {
       {/* Hero Section */}
       <main className="flex-1">
         <section className="px-8 py-24 md:py-32 max-w-5xl mx-auto text-center flex flex-col items-center">
-          <h1 className="text-5xl md:text-7xl font-serif font-medium leading-tight mb-6 text-black">
+          <h1 className="text-5xl md:text-7xl font-serif font-medium leading-tight mb-6 text-foreground">
             The minimal way to <br/> share your world.
           </h1>
-          <p className="text-xl md:text-2xl text-warm-gray max-w-2xl mb-12">
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mb-12">
             Create a beautiful, simple personal page in minutes. 
             No design skills required.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-            <button className="bg-yellow text-black px-8 py-4 rounded-full font-medium text-lg hover:brightness-95 transition-all">
+            <button className="bg-primary text-primary-foreground px-8 py-4 rounded-full font-medium text-lg hover:opacity-90 transition-opacity">
               Start Free Trial
             </button>
-            <button className="border border-light-border bg-transparent text-black px-8 py-4 rounded-full font-medium text-lg hover:bg-black/[0.02] transition-colors">
+            <button className="border border-border bg-transparent text-foreground px-8 py-4 rounded-full font-medium text-lg hover:bg-muted transition-colors">
               View Examples
             </button>
           </div>
@@ -107,7 +107,7 @@ export default function Home() {
       </main>
       
       {/* Footer */}
-      <footer className="px-8 py-12 border-t border-light-border text-center text-warm-gray text-sm">
+      <footer className="px-8 py-12 border-t border-border text-center text-muted-foreground text-sm">
         &copy; {new Date().getFullYear()} vcarrd. All rights reserved.
       </footer>
     </div>

@@ -58,8 +58,8 @@ export function AccordionItem({
       className={[
         "border rounded-xl overflow-hidden transition-colors duration-200",
         open
-          ? "border-theme-primary/40 bg-theme-card"
-          : "border-theme-border bg-theme-surface",
+          ? "border-primary/40 bg-card"
+          : "border-border bg-muted",
         className,
       ]
         .filter(Boolean)
@@ -78,15 +78,15 @@ export function AccordionItem({
           .filter(Boolean)
           .join(" ")}
       >
-        <div className="text-sm font-sans font-semibold text-theme-text">{title}</div>
+        <div className="text-sm font-sans font-semibold text-foreground">{title}</div>
 
         {/* Animated +/x icon */}
         <span
           aria-hidden
           className={[
             "shrink-0 w-6 h-6 rounded-full border flex items-center justify-center",
-            "transition-all duration-200 text-theme-text-muted",
-            open ? "border-theme-primary rotate-45" : "border-theme-border",
+            "transition-all duration-200 text-muted-foreground",
+            open ? "border-primary rotate-45" : "border-border",
           ].join(" ")}
         >
           <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden>
@@ -106,7 +106,7 @@ export function AccordionItem({
           role="region"
           aria-labelledby={`accordion-btn-${elementId}`}
           className={[
-            "px-5 pb-5 text-sm font-sans text-theme-text-muted leading-relaxed",
+            "px-5 pb-5 text-sm font-sans text-muted-foreground leading-relaxed",
             contentClassName,
           ]
             .filter(Boolean)

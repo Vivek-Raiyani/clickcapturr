@@ -168,6 +168,8 @@ class PageUpdate(BaseModel):
 class PageResponse(PageBase):
     id: UUID
     user_id: UUID
+    total_visits: int
+    total_lead_captures: int
     created_at: datetime
     updated_at: datetime
     link: Optional[LinkResponse] = None

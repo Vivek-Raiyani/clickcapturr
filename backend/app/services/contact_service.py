@@ -31,6 +31,7 @@ from sqlalchemy.orm import selectinload
 
 from app.models.contact import Contact, ContactLink
 from app.models.page import Page
+from app.models.campaign import Campaign
 from app.schemas.contact import ContactSubmitPayload
 
 logger = logging.getLogger(__name__)
@@ -146,6 +147,14 @@ class ContactService:
             .where(Page.id == page_id)
             .values(total_lead_captures=Page.total_lead_captures + 1)
         )
+        
+        # --- Increment campaign lead counter if present ---
+        if payload.campaign_id:
+            await db.execute(
+                update(Campaign)
+                .where(Campaign.id == payload.campaign_id)
+                .values(total_lead_captures=Campaign.total_lead_captures + 1)
+            )
 
         await db.commit()
         await db.refresh(link_event)

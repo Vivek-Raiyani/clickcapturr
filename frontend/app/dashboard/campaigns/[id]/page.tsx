@@ -566,36 +566,76 @@ export default function CampaignDetails() {
                 Campaign Overview
               </h2>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col justify-between">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                      <BarChart3 className="w-4 h-4" />
-                      Total Visits
+                    <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                      <BarChart3 className="w-3.5 h-3.5" />
+                      Total Views
                     </h3>
-                    <p className="text-5xl font-bold text-foreground">{campaignData.total_visits || 0}</p>
+                    <p className="text-3xl font-bold text-foreground">
+                      {campaignData.links.reduce((acc, link) => acc + (link.platform_views || 0), 0)}
+                    </p>
                   </div>
-                  {campaignData.total_visits > 0 ? (
-                    <p className="text-xs text-green-500 mt-4 font-medium">Across all tracking links and direct visits</p>
-                  ) : (
-                    <p className="text-xs text-muted-foreground mt-4">No traffic recorded yet</p>
-                  )}
+                  <p className="text-[10px] text-muted-foreground mt-3">Platform content views</p>
                 </div>
 
-                <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col justify-between">
+                <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
                   <div>
-                    <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-                      <Users className="w-4 h-4" />
+                    <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                      <Link2 className="w-3.5 h-3.5" />
+                      Total Clicks
+                    </h3>
+                    <p className="text-3xl font-bold text-foreground">
+                      {campaignData.links.reduce((acc, link) => acc + (link.total_clicks || 0), 0)}
+                    </p>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-3">Across all links</p>
+                </div>
+
+                <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                      <QrCode className="w-3.5 h-3.5" />
+                      Total Scans
+                    </h3>
+                    <p className="text-3xl font-bold text-foreground">
+                      {campaignData.links.reduce((acc, link) => acc + (link.total_scans || 0), 0)}
+                    </p>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-3">Across all links</p>
+                </div>
+                
+                <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                      <Users className="w-3.5 h-3.5" />
                       Contacts Captured
                     </h3>
-                    <p className="text-5xl font-bold text-foreground">{campaignData.total_lead_captures || 0}</p>
+                    <p className="text-3xl font-bold text-foreground">
+                      {campaignData.total_lead_captures || 0}
+                    </p>
                   </div>
-                  {campaignData.total_lead_captures > 0 ? (
-                    <p className="text-xs text-green-500 mt-4 font-medium">From connected page form submissions</p>
-                  ) : (
-                    <p className="text-xs text-muted-foreground mt-4">No leads recorded yet</p>
-                  )}
+                  <p className="text-[10px] text-muted-foreground mt-3">From connected pages</p>
                 </div>
+              </div>
+
+              <div className="bg-card border border-border rounded-xl p-8 text-center mt-6">
+                <Activity className="w-10 h-10 text-muted-foreground/40 mx-auto mb-4" />
+                <h3 className="font-medium mb-2">No activity yet</h3>
+                <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
+                  Share your campaign tracking links or QR codes to start collecting views, clicks, and contacts.
+                </p>
+                {pageData && (
+                  <Link
+                    href={`/public/${pageData.slug}`}
+                    target="_blank"
+                    className="text-sm text-primary hover:underline flex items-center justify-center gap-1"
+                  >
+                    <span>Open connected page</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </Link>
+                )}
               </div>
             </div>
           )}
@@ -1001,7 +1041,7 @@ export default function CampaignDetails() {
             <QrPreview
               url={typeof window !== "undefined" ? `${window.location.origin}/qr/${activeLinkData.shortcode.split('').reverse().join('')}` : `/qr/${activeLinkData.shortcode.split('').reverse().join('')}`}
               title={`${activeLinkData.label || "Link"} QR Code`}
-              shortCode={activeLinkData.shortcode}
+              shortCode={activeLinkData.shortcode.split('').reverse().join('')}
               initialConfig={activeLinkData.qr_config || null}
               onSaveConfig={(config) => handleSaveQrConfig(activeLinkData.id, config)}
               isSaving={isQrSaving}

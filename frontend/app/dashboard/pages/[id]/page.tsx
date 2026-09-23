@@ -233,33 +233,49 @@ export default function PageDetails() {
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">Total Views</h3>
-              <p className="text-4xl font-bold">{pageData.total_visits || 0}</p>
-              {pageData.total_visits > 0 ? (
-                <p className="text-xs text-green-500 mt-2 font-medium">Tracking active</p>
-              ) : (
-                <p className="text-xs text-muted-foreground mt-2">No data yet</p>
-              )}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+              <div>
+                <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                  <Activity className="w-3.5 h-3.5" />
+                  Total Views
+                </h3>
+                <p className="text-3xl font-bold">{pageData.total_visits || 0}</p>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-3">Direct page visits</p>
             </div>
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">QR Scans</h3>
-              <p className="text-4xl font-bold">{pageData.link?.total_scans || 0}</p>
-              {pageData.link?.total_scans ? (
-                <p className="text-xs text-green-500 mt-2 font-medium">Tracking active</p>
-              ) : (
-                <p className="text-xs text-muted-foreground mt-2">No data yet</p>
-              )}
+            
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+              <div>
+                <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  Total Clicks
+                </h3>
+                <p className="text-3xl font-bold">{pageData.link?.total_clicks || 0}</p>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-3">From short link</p>
             </div>
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">Contacts Captured</h3>
-              <p className="text-4xl font-bold">{pageData.total_lead_captures || 0}</p>
-              {pageData.total_lead_captures > 0 ? (
-                <p className="text-xs text-green-500 mt-2 font-medium">Tracking active</p>
-              ) : (
-                <p className="text-xs text-muted-foreground mt-2">No data yet</p>
-              )}
+
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+              <div>
+                <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                  <QrCode className="w-3.5 h-3.5" />
+                  QR Scans
+                </h3>
+                <p className="text-3xl font-bold">{pageData.link?.total_scans || 0}</p>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-3">From QR code scans</p>
+            </div>
+            
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+              <div>
+                <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                  <Users className="w-3.5 h-3.5" />
+                  Contacts Captured
+                </h3>
+                <p className="text-3xl font-bold">{pageData.total_lead_captures || 0}</p>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-3">From form submissions</p>
             </div>
           </div>
 
@@ -299,8 +315,8 @@ export default function PageDetails() {
           <div className="p-4">
             <QrPreview
               url={typeof window !== "undefined" ? `${window.location.origin}/qr/${pageData.link.shortcode.split('').reverse().join('')}` : `/qr/${pageData.link.shortcode.split('').reverse().join('')}`}
-              title="Page Link QR Code"
-              shortCode={pageData.link.shortcode}
+              title="QR Code"
+              shortCode={pageData.link.shortcode.split('').reverse().join('')}
               initialConfig={pageData.link.qr_config || null}
               onSaveConfig={handleSaveQrConfig}
               isSaving={isQrSaving}

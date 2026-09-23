@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { PagePreview } from "@/components/page-builder/PagePreview";
+import { PublicPageViewer } from "@/components/page-builder/PublicPageViewer";
 import { DEFAULT_PAGE_BUILDER_STATE, PageBuilderState } from "@/components/page-builder/types";
 import { getPublicPage, mapPayloadToState } from "@/lib/api/pages";
 
@@ -10,16 +10,15 @@ export default function PublicPage() {
   const params = useParams();
   const slug = params.slug as string;
   
-  const [state, setState] = useState<PageBuilderState | null>(null);
+  const [pageData, setPageData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadPage = async () => {
       try {
-        const pageData = await getPublicPage(slug);
-        const mappedState = mapPayloadToState(pageData, DEFAULT_PAGE_BUILDER_STATE);
-        setState(mappedState);
+        const data = await getPublicPage(slug);
+        setPageData(data);
       } catch (err: any) {
         setError("This page could not be found or is not active.");
       } finally {
@@ -41,7 +40,7 @@ export default function PublicPage() {
     );
   }
 
-  if (error || !state) {
+  if (error || !pageData) {
     return (
       <div className="fixed inset-0 z-50 bg-background flex flex-col items-center justify-center">
         <div className="bg-destructive/10 text-destructive p-6 rounded-2xl max-w-md text-center border border-destructive/20">
@@ -53,14 +52,6 @@ export default function PublicPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground">
-      <PagePreview
-        state={state}
-        onUpdateState={() => {}}
-        deviceMode="desktop"
-        onDeviceModeChange={() => {}}
-        isPublicView={true}
-      />
-    </div>
+    <PublicPageViewer page={pageData} />
   );
 }

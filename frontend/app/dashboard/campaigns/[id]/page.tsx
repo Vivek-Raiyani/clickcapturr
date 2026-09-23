@@ -14,6 +14,10 @@ import {
   LinkResponse,
 } from "@/lib/api/campaigns";
 import { getPage, getPages, PageResponse } from "@/lib/api/pages";
+import { listAllSubmissionsAction } from "@/actions/form.actions";
+import { FormSubmission } from "@/types";
+import { ContactsTable } from "@/components/features/contacts/ContactsTable";
+import { useAuth } from "@/context/AuthContext";
 import {
   Activity, Users, ExternalLink, Trash2, ArrowLeft, ArrowRight,
   Megaphone, LayoutTemplate, Pencil, Edit, Copy, Check, Plus, Link2, QrCode, BarChart3
@@ -42,11 +46,28 @@ export default function CampaignDetails() {
   const params = useParams();
   const campaignId = params.id as string;
 
+  const { token } = useAuth();
   const [activeView, setActiveView] = useState<ActiveView>({ type: "overview" });
   const [campaignData, setCampaignData] = useState<CampaignResponse | null>(null);
   const [pageData, setPageData] = useState<PageResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
+  const [loadingContacts, setLoadingContacts] = useState(false);
+
+  useEffect(() => {
+    if (activeView.type === "leads" && token && campaignId && submissions.length === 0) {
+      setLoadingContacts(true);
+      listAllSubmissionsAction(token).then(result => {
+        if (result.success && result.data) {
+          // Filter out submissions that do not belong to this campaign
+          setSubmissions(result.data.filter(s => s.campaign_id === campaignId));
+        }
+        setLoadingContacts(false);
+      });
+    }
+  }, [activeView.type, token, campaignId, submissions.length]);
 
   // Copy shortcode
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
@@ -446,7 +467,7 @@ export default function CampaignDetails() {
         </div>
 
         {/* ── Right Content Area ── */}
-        <div className="flex-1 w-full flex flex-col gap-5">
+        <div className="flex-1 w-full flex flex-col gap-5 min-w-0">
           
           {/* Always show what page is attached at the top of the right pane */}
           <div className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
@@ -533,18 +554,7 @@ export default function CampaignDetails() {
           {/* VIEW: LEADS */}
           {activeView.type === "leads" && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary" />
-                Leads & Contacts
-              </h2>
-              
-              <div className="bg-card border border-border rounded-xl p-16 text-center shadow-sm">
-                <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
-                <h3 className="text-lg font-medium mb-2 text-foreground">No Leads Yet</h3>
-                <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-                  When visitors submit the form on this campaign's page, their details will appear here.
-                </p>
-              </div>
+              <ContactsTable submissions={submissions} loading={loadingContacts} />
             </div>
           )}
 

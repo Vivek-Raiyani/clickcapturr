@@ -516,7 +516,7 @@ export const DEFAULT_PAGE_CONTENT: PageContent = {
 
 export const DEFAULT_FORM_FIELDS: FormField[] = [
   {
-    id: "f-name",
+    id: "first_name",
     pageId: "",
     label: "First Name",
     fieldType: "text",
@@ -526,7 +526,7 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     createdAt: new Date().toISOString(),
   },
   {
-    id: "l-name",
+    id: "last_name",
     pageId: "",
     label: "Last Name",
     fieldType: "text",
@@ -536,7 +536,7 @@ export const DEFAULT_FORM_FIELDS: FormField[] = [
     createdAt: new Date().toISOString(),
   },
   {
-    id: "f-email",
+    id: "email",
     pageId: "",
     label: "Email",
     fieldType: "email",

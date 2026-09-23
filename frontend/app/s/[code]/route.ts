@@ -24,11 +24,15 @@ export async function GET(
 
       const res = NextResponse.redirect(destination, { status: 307 });
 
-      // Route Handlers CAN set cookies — this is the correct place to do it
       res.cookies.set('cc_source_link', linkId, {
         maxAge: 30 * 24 * 60 * 60, // 30 days
         path: '/',
         httpOnly: false, // readable by client-side JS for lead attribution
+      });
+      res.cookies.set('cc_source_method', 'click', {
+        maxAge: 30 * 24 * 60 * 60,
+        path: '/',
+        httpOnly: false,
       });
 
       return res;

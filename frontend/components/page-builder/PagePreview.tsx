@@ -89,10 +89,13 @@ export function PagePreview({
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log("PagePreview handleSubmit triggered!", { isPublicView, hasOnSubmitForm: !!onSubmitForm });
     if (isPublicView && onSubmitForm) {
       const formData = new FormData(e.currentTarget);
       const data = Object.fromEntries(formData.entries());
+      console.log("Extracted form data:", data);
       const success = await onSubmitForm(data);
+      console.log("onSubmitForm returned:", success);
       if (success) {
         setFormSubmitted(true);
       }

@@ -155,7 +155,7 @@ export function FormFieldEditor({ fields, onChange }: FormFieldEditorProps) {
                 >
                   <ChevronDown className="w-3.5 h-3.5" />
                 </button>
-                {["f-name", "l-name", "f-email"].includes(field.id) ? (
+                {["first_name", "last_name", "email"].includes(field.id) ? (
                   <button
                     type="button"
                     disabled

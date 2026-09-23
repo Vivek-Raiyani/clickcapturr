@@ -1132,9 +1132,9 @@ export function PageInspectorPanel({
               </label>
               <select
                 value={
-                  currentDeliverableCategory === "file" && content.successAction.autoDownload
+                  currentDeliverableCategory === "file" && content.successAction?.autoDownload
                     ? "download_auto"
-                    : content.successAction.type
+                    : (content.successAction?.type || "message")
                 }
                 onChange={(e) => {
                   const val = e.target.value;

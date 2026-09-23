@@ -271,10 +271,10 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
 
   const builderInitialState: PageBuilderState = {
     ...DEFAULT_PAGE_BUILDER_STATE,
-    title: page.title,
+    title: page.title || page.name,
     slug: page.slug,
-    ...(page.themeJson ? { theme: page.themeJson } : {}),
-    ...(page.contentJson ? { content: page.contentJson } : {}),
+    ...(page.themeJson ? { theme: page.themeJson as any } : {}),
+    ...(page.contentJson ? { content: page.contentJson as any } : {}),
     ...(page.contentJson?.formFields ? { formFields: page.contentJson.formFields } : {}),
   };
 

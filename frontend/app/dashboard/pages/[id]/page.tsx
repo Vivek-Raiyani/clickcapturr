@@ -11,7 +11,13 @@ import { Modal } from "@/components/ui/Modal";
 import { QrPreview } from "@/components/features/links/QrPreview";
 import { QRConfig } from "@/types/qr";
 
+import { useAuth } from "@/context/AuthContext";
+import { ContactsTable } from "@/components/features/contacts/ContactsTable";
+import { listSubmissionsAction } from "@/actions/form.actions";
+import { FormSubmission } from "@/types";
+
 export default function PageDetails() {
+  const { token } = useAuth();
   const router = useRouter();
   const params = useParams();
   const pageId = params.id as string;
@@ -22,8 +28,23 @@ export default function PageDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const [submissions, setSubmissions] = useState<FormSubmission[]>([]);
+  const [loadingContacts, setLoadingContacts] = useState(false);
+
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [isQrSaving, setIsQrSaving] = useState(false);
+
+  useEffect(() => {
+    if (activeTab === "leads" && token && pageId && submissions.length === 0) {
+      setLoadingContacts(true);
+      listSubmissionsAction(pageId, token).then(result => {
+        if (result.success && result.data) {
+          setSubmissions(result.data);
+        }
+        setLoadingContacts(false);
+      });
+    }
+  }, [activeTab, token, pageId, submissions.length]);
 
   const handleSaveQrConfig = async (config: QRConfig) => {
     if (!pageData?.link?.id) return;
@@ -263,13 +284,7 @@ export default function PageDetails() {
       {/* Tab: Contacts */}
       {activeTab === "leads" && (
         <div className="space-y-6">
-          <div className="bg-card border border-border rounded-xl p-16 text-center shadow-sm">
-            <Users className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">No Contacts Yet</h3>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              When visitors submit the form on your landing page, their details will appear here.
-            </p>
-          </div>
+          <ContactsTable submissions={submissions} loading={loadingContacts} />
         </div>
       )}
 

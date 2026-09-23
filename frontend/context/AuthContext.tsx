@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setToken(storedToken);
       setUser(response.data);
     } catch (error) {
-      console.error("Token verification failed:", error);
+      console.warn("Token verification failed (likely expired/invalid). Clearing auth state.");
       localStorage.removeItem("token");
       setToken(null);
       setUser(null);

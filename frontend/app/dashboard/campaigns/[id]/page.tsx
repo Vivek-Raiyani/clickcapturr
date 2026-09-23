@@ -3,85 +3,129 @@
 import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import { getCampaign, deleteCampaign, updateCampaign, CampaignResponse } from "@/lib/api/campaigns";
+import {
+  getCampaign,
+  deleteCampaign,
+  updateCampaign,
+  createCampaignLink,
+  deleteCampaignLink,
+  CampaignResponse,
+  LinkResponse,
+} from "@/lib/api/campaigns";
 import { getPage, getPages, PageResponse } from "@/lib/api/pages";
-import { Activity, Users, ExternalLink, Trash2, ArrowLeft, ArrowRight, Megaphone, LayoutTemplate, Pencil, Edit, Copy, Check, QrCode } from "lucide-react";
+import {
+  Activity, Users, ExternalLink, Trash2, ArrowLeft, ArrowRight,
+  Megaphone, LayoutTemplate, Pencil, Edit, Copy, Check, Plus, Link2, QrCode, BarChart3
+} from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+
+const PLATFORM_OPTIONS = [
+  { value: "", label: "— None —" },
+  { value: "youtube", label: "YouTube" },
+  { value: "instagram", label: "Instagram" },
+  { value: "vimeo", label: "Vimeo" },
+  { value: "tiktok", label: "TikTok" },
+  { value: "other", label: "Other" },
+];
+
+type ActiveView = 
+  | { type: "overview" }
+  | { type: "leads" }
+  | { type: "link", linkId: string };
 
 export default function CampaignDetails() {
   const router = useRouter();
   const params = useParams();
   const campaignId = params.id as string;
 
-  const [activeTab, setActiveTab] = useState<"overview" | "leads">("overview");
+  const [activeView, setActiveView] = useState<ActiveView>({ type: "overview" });
   const [campaignData, setCampaignData] = useState<CampaignResponse | null>(null);
   const [pageData, setPageData] = useState<PageResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Copy shortcode
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
 
+  // Page linking
   const [pagesList, setPagesList] = useState<PageResponse[]>([]);
   const [editPageModalOpen, setEditPageModalOpen] = useState(false);
   const [selectedPageId, setSelectedPageId] = useState<string>("");
   const [savingPage, setSavingPage] = useState(false);
   const [saveError, setSaveError] = useState<string | null>(null);
 
-  // Edit Campaign State
+  // Edit Campaign
   const [editCampaignModalOpen, setEditCampaignModalOpen] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [savingCampaign, setSavingCampaign] = useState(false);
   const [editCampaignError, setEditCampaignError] = useState<string | null>(null);
 
-  // Delete Campaign State
+  // Delete Campaign
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Create Link
+  const [createLinkModalOpen, setCreateLinkModalOpen] = useState(false);
+  const [newLinkLabel, setNewLinkLabel] = useState("");
+  const [newLinkPlatform, setNewLinkPlatform] = useState("");
+  const [creatingLink, setCreatingLink] = useState(false);
+  const [createLinkError, setCreateLinkError] = useState<string | null>(null);
+
+  // Delete Link
+  const [confirmDeleteLinkId, setConfirmDeleteLinkId] = useState<string | null>(null);
+  const [deletingLinkId, setDeletingLinkId] = useState<string | null>(null);
+
+  const loadCampaign = async () => {
+    try {
+      const campaign = await getCampaign(campaignId);
+      setCampaignData(campaign);
+      setSelectedPageId(campaign.page_id || "");
+      if (campaign.page_id) {
+        try {
+          const page = await getPage(campaign.page_id);
+          setPageData(page);
+        } catch {
+          setPageData(null);
+        }
+      } else {
+        setPageData(null);
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to load campaign");
+    }
+  };
+
   useEffect(() => {
-    const loadCampaignAndPage = async () => {
+    const init = async () => {
       try {
-        const campaign = await getCampaign(campaignId);
-        setCampaignData(campaign);
-        setSelectedPageId(campaign.page_id || "");
-        
-        const [pagesData] = await Promise.all([
-          getPages(),
-          (async () => {
-            if (campaign.page_id) {
-              try {
-                const page = await getPage(campaign.page_id);
-                setPageData(page);
-              } catch (pageErr) {
-                console.error("Failed to load attached page:", pageErr);
-              }
-            } else {
-              setPageData(null);
-            }
-          })()
-        ]);
-        setPagesList(pagesData);
-      } catch (err: any) {
-        setError(err.message || "Failed to load campaign");
+        await loadCampaign();
+        const pages = await getPages();
+        setPagesList(pages);
       } finally {
         setLoading(false);
       }
     };
-
-    if (campaignId) {
-      loadCampaignAndPage();
-    }
+    if (campaignId) init();
   }, [campaignId]);
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
+
+  const handleCopyLink = (e: React.MouseEvent, shortcode: string, linkId: string) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(`${window.location.origin}/s/${shortcode}`);
+    setCopiedLinkId(linkId);
+    setTimeout(() => setCopiedLinkId(null), 2000);
+  };
 
   const handleSavePage = async () => {
     try {
       setSavingPage(true);
       setSaveError(null);
       const newPageId = selectedPageId || null;
-      
       const updated = await updateCampaign(campaignId, { page_id: newPageId });
       setCampaignData(updated);
-      
       if (newPageId) {
         const page = await getPage(newPageId);
         setPageData(page);
@@ -126,7 +170,7 @@ export default function CampaignDetails() {
     }
   };
 
-  const handleDelete = async () => {
+  const handleDeleteCampaign = async () => {
     try {
       setDeleting(true);
       await deleteCampaign(campaignId);
@@ -139,12 +183,55 @@ export default function CampaignDetails() {
     }
   };
 
-  const handleCopyLink = (shortcode: string, linkId: string) => {
-    const url = `${window.location.origin}/s/${shortcode}`;
-    navigator.clipboard.writeText(url);
-    setCopiedLinkId(linkId);
-    setTimeout(() => setCopiedLinkId(null), 2000);
+  const handleCreateLink = async () => {
+    if (!newLinkLabel.trim()) {
+      setCreateLinkError("Label is required to identify this link.");
+      return;
+    }
+    
+    try {
+      setCreatingLink(true);
+      setCreateLinkError(null);
+      const newLink = await createCampaignLink({
+        campaign_id: campaignId,
+        label: newLinkLabel.trim() || undefined,
+        platform: newLinkPlatform || undefined,
+      });
+      await loadCampaign();
+      setCreateLinkModalOpen(false);
+      setNewLinkLabel("");
+      setNewLinkPlatform("");
+      // Select the newly created link
+      setActiveView({ type: "link", linkId: newLink.id });
+    } catch (err: any) {
+      setCreateLinkError(err.message || "Failed to create link.");
+    } finally {
+      setCreatingLink(false);
+    }
   };
+
+  const handleDeleteLink = async () => {
+    if (!confirmDeleteLinkId) return;
+    try {
+      setDeletingLinkId(confirmDeleteLinkId);
+      await deleteCampaignLink(confirmDeleteLinkId);
+      await loadCampaign();
+      
+      // If we deleted the currently active link, switch back to overview
+      if (activeView.type === "link" && activeView.linkId === confirmDeleteLinkId) {
+        setActiveView({ type: "overview" });
+      }
+      
+      setConfirmDeleteLinkId(null);
+    } catch (err: any) {
+      console.error("Failed to delete link:", err);
+      alert(`Failed to delete link: ${err.message}`);
+    } finally {
+      setDeletingLinkId(null);
+    }
+  };
+
+  // ── Render Helpers ────────────────────────────────────────────────────────
 
   if (loading) {
     return (
@@ -171,10 +258,17 @@ export default function CampaignDetails() {
     );
   }
 
+  const linkToDelete = campaignData.links.find(l => l.id === confirmDeleteLinkId);
+  
+  // Find active link data if a link is selected
+  const activeLinkData = activeView.type === "link" 
+    ? campaignData.links.find(l => l.id === activeView.linkId)
+    : null;
+
   return (
-    <div className="animate-in fade-in duration-500">
-      {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
+    <div className="animate-in fade-in duration-500 max-w-7xl mx-auto">
+      {/* ── Page Header ── */}
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
         <div className="flex items-start gap-3">
           <button
             onClick={() => router.push("/dashboard/campaigns")}
@@ -195,12 +289,10 @@ export default function CampaignDetails() {
           </div>
         </div>
 
-        {/* Right-side actions */}
         <div className="flex items-center gap-2">
           <button
             onClick={openEditCampaignModal}
             className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border border-border transition-colors flex items-center gap-2"
-            title="Edit Campaign"
           >
             <Edit className="w-4 h-4" />
             <span className="text-sm font-medium hidden sm:inline">Edit</span>
@@ -208,7 +300,6 @@ export default function CampaignDetails() {
           <button
             onClick={() => setShowDeleteConfirm(true)}
             className="p-2 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 border border-border transition-colors flex items-center gap-2"
-            title="Delete Campaign"
           >
             <Trash2 className="w-4 h-4" />
             <span className="text-sm font-medium hidden sm:inline">Delete</span>
@@ -216,177 +307,383 @@ export default function CampaignDetails() {
         </div>
       </div>
 
-      {/* Page Reference Box */}
-      <div className="mb-8 bg-card border border-border rounded-xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 bg-muted/50 px-3 py-1.5 rounded-lg border border-border/50">
-            <Megaphone className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium">{campaignData.title}</span>
-          </div>
-          <ArrowRight className="w-4 h-4 text-muted-foreground" />
-          <div className="flex items-center gap-2">
-            {pageData ? (
-              <div className="flex items-center gap-2 bg-muted px-3 py-1.5 rounded-lg border border-border">
-                <LayoutTemplate className="w-4 h-4 text-muted-foreground" />
-                <span className="text-sm font-medium">{pageData.name}</span>
-              </div>
-            ) : (
-              <span className="text-sm text-muted-foreground italic">No Page Attached</span>
-            )}
-            <button
-              onClick={() => {
-                setSelectedPageId(campaignData?.page_id || "");
-                setSaveError(null);
-                setEditPageModalOpen(true);
-              }}
-              className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
-              title="Change Linked Page"
-            >
-              <Pencil className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
+      {/* ── Main Layout Split ── */}
+      <div className="flex flex-col lg:flex-row gap-5 items-start">
         
-        {pageData && (
-          <Link
-            href={`/public/${pageData.slug}`}
-            target="_blank"
-            className="text-sm font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 bg-primary/10 px-4 py-2 rounded-lg"
-          >
-            <span>Visit Public Page</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </Link>
-        )}
-      </div>
+        {/* ── Left Sidebar ── */}
+        <div className="w-full lg:w-64 shrink-0 flex flex-col gap-4 lg:sticky lg:top-6">
+          
+          {/* Main Navigation */}
+          <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+            <div className="p-2 flex flex-col gap-1">
+              <button
+                onClick={() => setActiveView({ type: "overview" })}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeView.type === "overview"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <Activity className="w-4 h-4" />
+                Campaign Overview
+              </button>
+              <button
+                onClick={() => setActiveView({ type: "leads" })}
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeView.type === "leads"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                }`}
+              >
+                <Users className="w-4 h-4" />
+                Leads & Contacts
+              </button>
+            </div>
+          </div>
 
-      {/* Tab Bar */}
-      <div className="flex items-center gap-1 border-b border-border mb-6">
-        <button
-          onClick={() => setActiveTab("overview")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === "overview"
-              ? "border-primary text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Activity className="w-4 h-4" />
-          Overview
-        </button>
-        <button
-          onClick={() => setActiveTab("leads")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === "leads"
-              ? "border-primary text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          Leads & Contacts
-        </button>
-      </div>
-
-      {/* Tab: Overview */}
-      {activeTab === "overview" && (
-        <div className="space-y-6">
-          {/* Links Section */}
-          {campaignData.links && campaignData.links.length > 0 && (
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-medium text-foreground">Campaign Links</h3>
-              </div>
-              <div className="space-y-3">
-                {campaignData.links.map(link => (
-                  <div key={link.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-border rounded-lg bg-background">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
-                      <div className="flex items-center bg-muted border border-border rounded-lg overflow-hidden flex-1 sm:max-w-md">
-                        <span className="px-3 py-2 text-sm font-mono text-muted-foreground border-r border-border bg-background truncate flex-1">
-                          {typeof window !== 'undefined' ? `${window.location.origin}/s/${link.shortcode}` : `/s/${link.shortcode}`}
+          {/* Tracking Links Navigation */}
+          <div className="bg-card border border-border rounded-xl shadow-sm flex flex-col h-[calc(100vh-180px)] min-h-[400px]">
+            <div className="p-4 border-b border-border flex items-center justify-between bg-muted/30">
+              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                <Link2 className="w-4 h-4" />
+                Tracking Links
+              </h3>
+              <span className="text-xs bg-background border border-border text-muted-foreground px-2 py-0.5 rounded-full font-medium">
+                {campaignData.links.length}
+              </span>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-2 space-y-1">
+              {campaignData.links.length === 0 ? (
+                <div className="p-4 text-center text-sm text-muted-foreground italic">
+                  No links created yet.
+                </div>
+              ) : (
+                campaignData.links.map(link => {
+                  const isActive = activeView.type === "link" && activeView.linkId === link.id;
+                  return (
+                    <div
+                      key={link.id}
+                      onClick={() => setActiveView({ type: "link", linkId: link.id })}
+                      className={`group flex items-center justify-between p-2 rounded-lg text-sm cursor-pointer transition-colors ${
+                        isActive 
+                          ? "bg-primary text-primary-foreground" 
+                          : "hover:bg-muted text-foreground"
+                      }`}
+                    >
+                      <div className="flex flex-col min-w-0">
+                        <span className="font-medium truncate">
+                          {link.label || link.shortcode}
                         </span>
-                        <button 
-                          onClick={() => handleCopyLink(link.shortcode, link.id)}
-                          className="p-2 hover:bg-background transition-colors text-foreground flex items-center justify-center w-10 shrink-0"
-                          title="Copy Link"
-                        >
-                          {copiedLinkId === link.id ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                        </button>
+                        {link.platform && (
+                          <span className={`text-[10px] uppercase tracking-wider mt-0.5 ${isActive ? "text-primary-foreground/70" : "text-muted-foreground"}`}>
+                            {link.platform}
+                          </span>
+                        )}
                       </div>
                       
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground ml-auto whitespace-nowrap">
-                        <div className="flex flex-col items-end">
-                          <span className="font-medium text-foreground">{link.total_clicks}</span>
-                          <span className="text-xs">Clicks</span>
-                        </div>
-                        <div className="flex flex-col items-end">
-                          <span className="font-medium text-foreground">{link.total_scans}</span>
-                          <span className="text-xs">Scans</span>
-                        </div>
+                      {/* Action buttons (appear on hover/active) */}
+                      <div className={`flex items-center gap-1 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"} transition-opacity`}>
+                        <button
+                          onClick={(e) => handleCopyLink(e, link.shortcode, link.id)}
+                          className={`p-1.5 rounded-md transition-colors ${isActive ? "hover:bg-primary-foreground/20 text-primary-foreground" : "hover:bg-background text-muted-foreground"}`}
+                          title="Copy Link"
+                        >
+                          {copiedLinkId === link.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setConfirmDeleteLinkId(link.id);
+                          }}
+                          className={`p-1.5 rounded-md transition-colors ${isActive ? "hover:bg-red-500/20 text-primary-foreground" : "hover:bg-red-500/10 hover:text-red-500 text-muted-foreground"}`}
+                          title="Delete Link"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     </div>
+                  );
+                })
+              )}
+            </div>
+
+            <div className="p-3 border-t border-border bg-muted/30">
+              <button
+                onClick={() => {
+                  setNewLinkLabel("");
+                  setNewLinkPlatform("");
+                  setCreateLinkError(null);
+                  setCreateLinkModalOpen(true);
+                }}
+                className="w-full flex items-center justify-center gap-2 text-sm font-medium bg-background border border-border hover:border-primary/50 text-foreground hover:text-primary py-2 rounded-lg transition-colors shadow-sm"
+              >
+                <Plus className="w-4 h-4" />
+                Add New Link
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Right Content Area ── */}
+        <div className="flex-1 w-full flex flex-col gap-5">
+          
+          {/* Always show what page is attached at the top of the right pane */}
+          <div className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="bg-muted p-2 rounded-lg">
+                <LayoutTemplate className="w-4 h-4 text-muted-foreground" />
+              </div>
+              <div>
+                <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider mb-0.5">Destination Page</p>
+                {pageData ? (
+                  <p className="text-sm font-medium text-foreground">{pageData.name}</p>
+                ) : (
+                  <p className="text-sm text-destructive font-medium">No Page Attached</p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => {
+                  setSelectedPageId(campaignData?.page_id || "");
+                  setSaveError(null);
+                  setEditPageModalOpen(true);
+                }}
+                className="text-xs font-medium px-3 py-1.5 bg-muted hover:bg-muted/80 text-foreground rounded-lg transition-colors border border-border"
+              >
+                Change Page
+              </button>
+              {pageData && (
+                <Link
+                  href={`/public/${pageData.slug}`}
+                  target="_blank"
+                  className="text-xs font-medium text-primary hover:text-primary/80 transition-colors flex items-center gap-1.5 bg-primary/10 px-3 py-1.5 rounded-lg"
+                >
+                  <span>Open Page</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {/* VIEW: OVERVIEW */}
+          {activeView.type === "overview" && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Activity className="w-5 h-5 text-primary" />
+                Campaign Overview
+              </h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                      <BarChart3 className="w-4 h-4" />
+                      Total Visits
+                    </h3>
+                    <p className="text-5xl font-bold text-foreground">{campaignData.total_visits || 0}</p>
                   </div>
-                ))}
+                  {campaignData.total_visits > 0 ? (
+                    <p className="text-xs text-green-500 mt-4 font-medium">Across all tracking links and direct visits</p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground mt-4">No traffic recorded yet</p>
+                  )}
+                </div>
+                
+                <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
+                      <Users className="w-4 h-4" />
+                      Contacts Captured
+                    </h3>
+                    <p className="text-5xl font-bold text-foreground">{campaignData.total_lead_captures || 0}</p>
+                  </div>
+                  {campaignData.total_lead_captures > 0 ? (
+                    <p className="text-xs text-green-500 mt-4 font-medium">From connected page form submissions</p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground mt-4">No leads recorded yet</p>
+                  )}
+                </div>
               </div>
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">Total Visits</h3>
-              <p className="text-4xl font-bold">{campaignData.total_visits || 0}</p>
-              {campaignData.total_visits > 0 ? (
-                <p className="text-xs text-green-500 mt-2 font-medium">Tracking active</p>
-              ) : (
-                <p className="text-xs text-muted-foreground mt-2">No data yet</p>
-              )}
+          {/* VIEW: LEADS */}
+          {activeView.type === "leads" && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Users className="w-5 h-5 text-primary" />
+                Leads & Contacts
+              </h2>
+              
+              <div className="bg-card border border-border rounded-xl p-16 text-center shadow-sm">
+                <Users className="w-12 h-12 text-muted-foreground/30 mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2 text-foreground">No Leads Yet</h3>
+                <p className="text-sm text-muted-foreground max-w-sm mx-auto">
+                  When visitors submit the form on this campaign's page, their details will appear here.
+                </p>
+              </div>
             </div>
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">Contacts Captured</h3>
-              <p className="text-4xl font-bold">{campaignData.total_lead_captures || 0}</p>
-              {campaignData.total_lead_captures > 0 ? (
-                <p className="text-xs text-green-500 mt-2 font-medium">Tracking active</p>
-              ) : (
-                <p className="text-xs text-muted-foreground mt-2">No data yet</p>
-              )}
+          )}
+
+          {/* VIEW: SINGLE LINK */}
+          {activeView.type === "link" && activeLinkData && (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-4">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Link2 className="w-4 h-4 text-primary" />
+                    <h2 className="text-lg font-semibold text-foreground">
+                      {activeLinkData.label || "Unlabeled Link"}
+                    </h2>
+                    {activeLinkData.platform && (
+                      <span className="text-[10px] bg-muted border border-border uppercase tracking-wider px-2 py-0.5 rounded-full text-muted-foreground ml-2">
+                        {activeLinkData.platform}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div className="flex items-center gap-2 mt-3">
+                    <div className="bg-muted border border-border rounded-md px-3 py-1.5 flex items-center">
+                      <span className="text-sm font-mono text-muted-foreground truncate max-w-[200px] sm:max-w-md">
+                        {typeof window !== "undefined"
+                          ? `${window.location.origin}/s/${activeLinkData.shortcode}`
+                          : `/s/${activeLinkData.shortcode}`}
+                      </span>
+                    </div>
+                    <button
+                      onClick={(e) => handleCopyLink(e, activeLinkData.shortcode, activeLinkData.id)}
+                      className="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-md transition-colors"
+                      title="Copy Link"
+                    >
+                      {copiedLinkId === activeLinkData.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+                
+                <div className="flex gap-4 bg-card border border-border p-3 rounded-lg shadow-sm">
+                  <div className="flex flex-col items-center px-4 border-r border-border">
+                    <span className="text-2xl font-bold text-foreground leading-none">{activeLinkData.total_clicks}</span>
+                    <span className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider">Clicks</span>
+                  </div>
+                  <div className="flex flex-col items-center px-4">
+                    <span className="text-2xl font-bold text-foreground leading-none">{activeLinkData.total_scans}</span>
+                    <span className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider">Scans</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* QR Code Section Placeholder */}
+              <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+                <div className="p-4 border-b border-border bg-muted/30">
+                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <QrCode className="w-4 h-4" />
+                    QR Code Configuration
+                  </h3>
+                </div>
+                <div className="p-12 text-center flex flex-col items-center justify-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-5">
+                  <QrCode className="w-16 h-16 text-muted-foreground/20 mb-4" />
+                  <h4 className="text-lg font-medium text-foreground mb-2">Design Your QR Code</h4>
+                  <p className="text-sm text-muted-foreground max-w-md">
+                    Custom colors, patterns, and logos will be configurable here soon. Each link gets its own unique QR code that tracks scans independently.
+                  </p>
+                </div>
+              </div>
+
             </div>
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">Total Spend</h3>
-              <p className="text-4xl font-bold">$0</p>
-              <p className="text-xs text-muted-foreground mt-2">Coming soon</p>
-            </div>
+          )}
+
+        </div>
+      </div>
+
+      {/* ── Modals ── (Kept identical functionally) */}
+
+      <Modal
+        open={createLinkModalOpen}
+        onClose={() => setCreateLinkModalOpen(false)}
+        title="Add Campaign Link"
+        description="Create a new trackable link for this campaign. Each link tracks clicks and QR scans independently."
+        maxWidth="md"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium text-foreground mb-1.5 block">
+              Label <span className="text-red-400">*</span>
+            </label>
+            <input
+              type="text"
+              placeholder='e.g. "YouTube Main Video"'
+              value={newLinkLabel}
+              onChange={(e) => setNewLinkLabel(e.target.value)}
+              className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/60 transition-colors placeholder:text-muted-foreground/50"
+            />
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-8 text-center">
-            <Activity className="w-10 h-10 text-muted-foreground/40 mx-auto mb-4" />
-            <h3 className="font-medium mb-2">No activity yet</h3>
-            <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
-              Start driving traffic to your campaign's page to see performance metrics here.
-            </p>
-            {pageData && (
-              <Link
-                href={`/public/${pageData.slug}`}
-                target="_blank"
-                className="text-sm text-primary hover:underline flex items-center justify-center gap-1"
-              >
-                <span>Open public page</span>
-                <ExternalLink className="w-3 h-3" />
-              </Link>
-            )}
+          <div>
+            <label className="text-sm font-medium text-foreground mb-1.5 block">
+              Platform <span className="text-muted-foreground font-normal">(optional)</span>
+            </label>
+            <select
+              value={newLinkPlatform}
+              onChange={(e) => setNewLinkPlatform(e.target.value)}
+              className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/60 transition-colors"
+            >
+              {PLATFORM_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
           </div>
-        </div>
-      )}
 
-      {/* Tab: Leads */}
-      {activeTab === "leads" && (
-        <div className="space-y-6">
-          <div className="bg-card border border-border rounded-xl p-16 text-center shadow-sm">
-            <Users className="w-12 h-12 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">No Leads Yet</h3>
-            <p className="text-sm text-muted-foreground max-w-sm mx-auto">
-              When visitors submit the form on this campaign's page, their details will appear here.
+          {createLinkError && (
+            <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+              {createLinkError}
             </p>
+          )}
+
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              onClick={() => setCreateLinkModalOpen(false)}
+              className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleCreateLink}
+              disabled={creatingLink}
+              className="bg-primary text-primary-foreground px-6 py-2 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
+            >
+              {creatingLink ? (
+                <>
+                  <div className="w-3.5 h-3.5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="w-3.5 h-3.5" />
+                  Create Link
+                </>
+              )}
+            </button>
           </div>
         </div>
-      )}
-    {/* Edit Page Modal */}
+      </Modal>
+
+      <ConfirmDialog
+        open={!!confirmDeleteLinkId}
+        title="Delete Link?"
+        highlight={linkToDelete?.label || linkToDelete?.shortcode}
+        description="This will permanently delete this link. Existing clicks and scans data will be lost. This cannot be undone."
+        confirmLabel="Delete Link"
+        isDangerous
+        isLoading={!!deletingLinkId}
+        onConfirm={handleDeleteLink}
+        onCancel={() => setConfirmDeleteLinkId(null)}
+      />
+
       <Modal
         open={editPageModalOpen}
         onClose={() => setEditPageModalOpen(false)}
@@ -396,17 +693,17 @@ export default function CampaignDetails() {
       >
         <div className="space-y-4">
           <div>
-            <label className="text-sm font-medium text-foreground mb-1.5 block">
-              Select Page
-            </label>
+            <label className="text-sm font-medium text-foreground mb-1.5 block">Select Page</label>
             <select
               value={selectedPageId}
               onChange={(e) => setSelectedPageId(e.target.value)}
               className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/60 transition-colors"
             >
               <option value="">-- No page attached --</option>
-              {pagesList.map(p => (
-                <option key={p.id} value={p.id}>{p.name} (/{p.slug})</option>
+              {pagesList.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} (/{p.slug})
+                </option>
               ))}
             </select>
           </div>
@@ -435,20 +732,18 @@ export default function CampaignDetails() {
         </div>
       </Modal>
 
-      {/* Delete Confirmation */}
       <ConfirmDialog
         open={showDeleteConfirm}
         title="Delete Campaign?"
         highlight={campaignData?.title}
-        description="This will permanently delete this campaign. Note that any linked page will NOT be deleted."
+        description="This will permanently delete this campaign and all its links. Note that any linked page will NOT be deleted."
         confirmLabel="Delete Campaign"
         isDangerous
         isLoading={deleting}
-        onConfirm={handleDelete}
+        onConfirm={handleDeleteCampaign}
         onCancel={() => setShowDeleteConfirm(false)}
       />
 
-      {/* Edit Campaign Modal */}
       <Modal
         open={editCampaignModalOpen}
         onClose={() => setEditCampaignModalOpen(false)}

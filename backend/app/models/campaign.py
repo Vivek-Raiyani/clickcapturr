@@ -15,4 +15,10 @@ class Campaign(SoftDeleteMixin, Base):
 
     user = relationship("User")
     page = relationship("Page")
-    links = relationship("Link", back_populates="campaign", cascade="all, delete-orphan", lazy="selectin")
+    links = relationship(
+        "Link",
+        primaryjoin="and_(Campaign.id==Link.campaign_id, Link.is_deleted==False)",
+        back_populates="campaign",
+        cascade="all, delete-orphan",
+        lazy="selectin"
+    )

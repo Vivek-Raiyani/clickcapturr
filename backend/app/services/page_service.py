@@ -66,7 +66,7 @@ class PageService:
         logger.info("Page created successfully: id='%s'", page_id)
         
         # Auto-generate link for the new page
-        link_in = LinkCreate(page_id=page_id)
+        link_in = LinkCreate(page_id=page_id, label=page_in.name)
         await link_service.create_link(db, user_id, link_in)
         
         # Re-fetch with relationships loaded

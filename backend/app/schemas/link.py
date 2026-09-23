@@ -15,6 +15,7 @@ class QRConfig(BaseModel):
 class LinkBase(BaseModel):
     page_id: Optional[UUID4] = None
     campaign_id: Optional[UUID4] = None
+    label: Optional[str] = None
     qr_config: Optional[QRConfig] = None
     platform: Optional[str] = None
     platform_content_id: Optional[str] = None
@@ -23,8 +24,7 @@ class LinkCreate(LinkBase):
     pass
 
 class LinkUpdate(BaseModel):
-    page_id: Optional[UUID4] = None
-    campaign_id: Optional[UUID4] = None
+    label: Optional[str] = None
     qr_config: Optional[QRConfig] = None
     platform: Optional[str] = None
     platform_content_id: Optional[str] = None

@@ -32,7 +32,7 @@ class CampaignService:
         logger.info("Campaign created successfully: id='%s'", campaign_id)
         
         # Auto-generate link for the new campaign
-        link_in = LinkCreate(campaign_id=campaign_id)
+        link_in = LinkCreate(campaign_id=campaign_id, label=campaign_in.title)
         await link_service.create_link(db, user_id, link_in)
         
         # Re-fetch with relationships loaded

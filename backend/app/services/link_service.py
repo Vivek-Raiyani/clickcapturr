@@ -33,6 +33,7 @@ class LinkService:
             page_id=link_in.page_id,
             campaign_id=link_in.campaign_id,
             shortcode=shortcode,
+            label=link_in.label,
             qr_config=link_in.qr_config.model_dump() if link_in.qr_config else None,
             platform=link_in.platform,
             platform_content_id=link_in.platform_content_id

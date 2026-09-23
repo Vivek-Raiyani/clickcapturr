@@ -10,6 +10,7 @@ class Link(SoftDeleteMixin, Base):
     campaign_id = Column(ForeignKey("campaigns.id", ondelete="CASCADE"), nullable=True, index=True)
     
     shortcode = Column(String, unique=True, index=True, nullable=False)
+    label = Column(String, nullable=True)  # e.g. "YouTube Video 1", "Instagram Bio"
     
     total_clicks = Column(Integer, default=0)
     total_scans = Column(Integer, default=0)

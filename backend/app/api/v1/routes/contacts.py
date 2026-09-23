@@ -10,7 +10,8 @@ Authenticated endpoints (page owner only):
 """
 
 from uuid import UUID
-from typing import List
+from typing import List, Optional
+from datetime import datetime
 
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.responses import Response
@@ -170,21 +171,23 @@ async def list_submissions(
 
 
 # ---------------------------------------------------------------------------
-# Authenticated — CSV export
+# ---------------------------------------------------------------------------
+# Authenticated — EXCEL export
 # ---------------------------------------------------------------------------
 
 @router.get(
     "/page/{page_id}/export",
-    summary="Export all form submissions as CSV",
+    summary="Export all form submissions as Excel",
 )
-async def export_leads_csv(
+async def export_leads_excel(
     page_id: UUID,
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
     db: AsyncSession = Depends(deps.get_db),
     current_user: User = Depends(deps.get_current_active_user),
 ):
     """
-    Streams a UTF-8 CSV of all submission events for a page.
-    Columns: fixed contact fields + every custom form-field key found in data_json.
+    Streams an Excel file of submission events for a page.
     """
     # Verify ownership
     page_result = await db.execute(
@@ -198,11 +201,42 @@ async def export_leads_csv(
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
 
-    csv_bytes = await contact_service.export_csv(db, page_id)
+    excel_bytes = await contact_service.export_excel(db, page_id, start_date, end_date)
 
-    filename = f"leads-{page.slug}.csv"
+    filename = f"leads-{page.slug}.xlsx"
     return Response(
-        content=csv_bytes,
-        media_type="text/csv",
+        content=excel_bytes,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
+
+
+@router.get(
+    "/export",
+    summary="Export all form submissions as Excel, optionally filtered",
+)
+async def export_all_leads_excel(
+    page_id: Optional[UUID] = None,
+    campaign_id: Optional[UUID] = None,
+    start_date: Optional[datetime] = None,
+    end_date: Optional[datetime] = None,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user),
+):
+    """
+    Streams an Excel file of submission events for the authenticated user.
+    """
+    excel_bytes = await contact_service.export_user_excel(db, current_user.id, page_id, campaign_id, start_date, end_date)
+
+    filename = "all-contacts.xlsx"
+    if page_id:
+        # Fetch page to get name or slug if needed, but for simplicity using ID
+        filename = f"page-contacts.xlsx"
+    elif campaign_id:
+        filename = f"campaign-contacts.xlsx"
+
+    return Response(
+        content=excel_bytes,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
         headers={"Content-Disposition": f'attachment; filename="{filename}"'},
     )

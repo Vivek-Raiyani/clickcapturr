@@ -146,21 +146,66 @@ export async function listAllSubmissionsAction(
 // exportLeadsCsvAction — authenticated, returns a Blob URL for download
 // ---------------------------------------------------------------------------
 
-export async function exportLeadsCsvAction(
+export async function exportPageLeadsExcelAction(
   pageId: string,
-  token?: string
+  token?: string,
+  startDate?: string,
+  endDate?: string
 ): Promise<ActionResult<string>> {
   try {
-    const res = await apiFetch(`/contacts/page/${pageId}/export`, {
+    const params = new URLSearchParams();
+    if (startDate) params.append("start_date", startDate);
+    if (endDate) params.append("end_date", endDate);
+    
+    const queryString = params.toString() ? `?${params.toString()}` : "";
+    
+    const res = await apiFetch(`/contacts/page/${pageId}/export${queryString}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     if (!res.ok) {
       const json = await res.json().catch(() => ({}));
       return { success: false, error: (json as { detail?: string }).detail || "Export failed" };
     }
-    // Return the CSV text — the caller creates a Blob + download link
-    const csvText = await res.text();
-    return { success: true, data: csvText };
+    const arrayBuffer = await res.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString('base64');
+    return { success: true, data: base64 };
+  } catch (err: unknown) {
+    return { success: false, error: err instanceof Error ? err.message : "Network error" };
+  }
+}
+
+// ---------------------------------------------------------------------------
+// exportLeadsExcelAction — authenticated, returns base64 Excel string
+// ---------------------------------------------------------------------------
+
+export async function exportLeadsExcelAction(
+  token: string,
+  pageId?: string,
+  campaignId?: string,
+  startDate?: string,
+  endDate?: string
+): Promise<ActionResult<string>> {
+  try {
+    const params = new URLSearchParams();
+    if (pageId) params.append("page_id", pageId);
+    if (campaignId) params.append("campaign_id", campaignId);
+    if (startDate) params.append("start_date", startDate);
+    if (endDate) params.append("end_date", endDate);
+    
+    const queryString = params.toString() ? `?${params.toString()}` : "";
+    
+    const res = await apiFetch(`/contacts/export${queryString}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    
+    if (!res.ok) {
+      const json = await res.json().catch(() => ({}));
+      return { success: false, error: (json as { detail?: string }).detail || "Export failed" };
+    }
+    
+    const arrayBuffer = await res.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString('base64');
+    return { success: true, data: base64 };
   } catch (err: unknown) {
     return { success: false, error: err instanceof Error ? err.message : "Network error" };
   }

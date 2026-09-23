@@ -20,6 +20,9 @@ import io
 import csv
 from typing import Optional, List
 from uuid import UUID
+from datetime import datetime
+from collections import Counter
+import xlsxwriter
 
 from fastapi import Request
 from sqlalchemy import select, update
@@ -196,59 +199,167 @@ class ContactService:
         return list(result.scalars().all())
 
     # -----------------------------------------------------------------------
-    # EXPORT — CSV stream
+    # EXPORT — EXCEL stream
     # -----------------------------------------------------------------------
 
-    async def export_csv(
-        self, db: AsyncSession, page_id: UUID
-    ) -> bytes:
-        """
-        Build and return a UTF-8 CSV of all submissions for a page.
-        Collects all unique field keys from data_json across all rows
-        so every custom field gets its own column.
-        """
-        rows = await self.list_for_page(db, page_id)
-
-        # Gather the superset of custom field names
-        custom_keys: list[str] = []
-        seen: set[str] = set()
-        for row in rows:
-            for k in (row.data_json or {}).keys():
-                if k not in seen:
-                    seen.add(k)
-                    custom_keys.append(k)
-
-        fixed_cols = [
-            "submission_id", "contact_id",
+    def _create_excel_workbook(self, rows: List[ContactLink]) -> bytes:
+        buf = io.BytesIO()
+        workbook = xlsxwriter.Workbook(buf, {'in_memory': True})
+        worksheet = workbook.add_worksheet('Contacts')
+        
+        bold = workbook.add_format({'bold': True})
+        
+        headers = [
+            "page", "campaign",
             "first_name", "last_name", "email", "phone",
             "country", "state", "city",
-            "submitted_at",
+            "submitted_at", "method"
         ]
-        all_cols = fixed_cols + custom_keys
-
-        buf = io.StringIO()
-        writer = csv.DictWriter(buf, fieldnames=all_cols, extrasaction="ignore")
-        writer.writeheader()
-
-        for row in rows:
+        
+        for col_num, header in enumerate(headers):
+            worksheet.write(0, col_num, header, bold)
+            
+        page_counts = Counter()
+        location_counts = Counter()
+        campaign_counts = Counter()
+        
+        for row_num, row in enumerate(rows, 1):
             c = row.contact
-            record: dict = {
-                "submission_id": str(row.id),
-                "contact_id":    str(row.contact_id),
-                "first_name":    c.first_name  if c else "",
-                "last_name":     c.last_name   if c else "",
-                "email":         c.email       if c else "",
-                "phone":         c.phone       if c else "",
-                "country":       row.country      or "",
-                "state":         row.state        or "",
-                "city":          row.city         or "",
-                "submitted_at":  row.created_at.isoformat(),
-            }
-            for k in custom_keys:
-                record[k] = (row.data_json or {}).get(k, "")
-            writer.writerow(record)
+            data_json = row.data_json or {}
+            method = data_json.get("_method") or ("click" if row.link_id else "direct")
+            
+            page_name = row.page.name if row.page else ""
+            campaign_name = row.campaign.title if row.campaign else ""
+            country = row.country or ""
+            
+            if page_name: page_counts[page_name] += 1
+            if country: location_counts[country] += 1
+            if campaign_name: campaign_counts[campaign_name] += 1
+            
+            record = [
+                page_name,
+                campaign_name,
+                c.first_name if c else "",
+                c.last_name if c else "",
+                c.email if c else "",
+                c.phone if c else "",
+                country,
+                row.state or "",
+                row.city or "",
+                row.created_at.isoformat(),
+                method
+            ]
+            
+            for col_num, item in enumerate(record):
+                worksheet.write(row_num, col_num, item)
 
-        return buf.getvalue().encode("utf-8")
+        worksheet.set_column('A:K', 15)
+
+        summary_row = 1
+        
+        def add_chart(counts, title, col_offset):
+            nonlocal summary_row
+            if not counts: return
+            
+            start_row = summary_row
+            worksheet.write(start_row, 15 + col_offset, title, bold)
+            
+            # Limit to top 10 for charts
+            for i, (name, count) in enumerate(counts.most_common(10)):
+                worksheet.write(start_row + 1 + i, 15 + col_offset, name)
+                worksheet.write(start_row + 1 + i, 16 + col_offset, count)
+                
+            end_row = start_row + min(10, len(counts))
+            if end_row > start_row:
+                chart = workbook.add_chart({'type': 'column'})
+                chart.add_series({
+                    'categories': ['Contacts', start_row + 1, 15 + col_offset, end_row, 15 + col_offset],
+                    'values':     ['Contacts', start_row + 1, 16 + col_offset, end_row, 16 + col_offset],
+                    'name': title,
+                })
+                chart.set_title({'name': title})
+                chart.set_legend({'none': True})
+                chart.show_hidden_data()
+                
+                # Insert chart starting from column M (12)
+                worksheet.insert_chart(start_row, 12 + int(col_offset/3) * 8, chart)
+                
+                summary_row = max(summary_row, end_row + 2)
+
+        add_chart(page_counts, 'Page vs Contacts', 0)
+        add_chart(location_counts, 'Location vs Contacts', 3)
+        add_chart(campaign_counts, 'Campaign vs Contacts', 6)
+
+        # Hide the summary data columns
+        worksheet.set_column(15, 30, None, None, {'hidden': True})
+        
+        workbook.close()
+        return buf.getvalue()
+
+    async def export_excel(
+        self, db: AsyncSession, page_id: UUID, start_date: Optional[datetime] = None, end_date: Optional[datetime] = None
+    ) -> bytes:
+        """
+        Build and return an Excel workbook of all submissions for a page.
+        """
+        query = (
+            select(ContactLink)
+            .where(ContactLink.page_id == page_id)
+            .options(
+                selectinload(ContactLink.contact),
+                selectinload(ContactLink.page),
+                selectinload(ContactLink.campaign)
+            )
+        )
+        if start_date:
+            query = query.where(ContactLink.created_at >= start_date)
+        if end_date:
+            query = query.where(ContactLink.created_at <= end_date)
+            
+        query = query.order_by(ContactLink.created_at.desc())
+        
+        result = await db.execute(query)
+        rows = list(result.scalars().all())
+
+        return self._create_excel_workbook(rows)
+
+    async def export_user_excel(
+        self,
+        db: AsyncSession,
+        user_id: UUID,
+        page_id: Optional[UUID] = None,
+        campaign_id: Optional[UUID] = None,
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None
+    ) -> bytes:
+        """
+        Build and return an Excel workbook of submissions for a user, optionally filtered.
+        """
+        query = (
+            select(ContactLink)
+            .join(Page, ContactLink.page_id == Page.id)
+            .where(Page.user_id == user_id, Page.is_deleted == False)
+        )
+
+        if page_id:
+            query = query.where(ContactLink.page_id == page_id)
+        if campaign_id:
+            query = query.where(ContactLink.campaign_id == campaign_id)
+        if start_date:
+            query = query.where(ContactLink.created_at >= start_date)
+        if end_date:
+            query = query.where(ContactLink.created_at <= end_date)
+
+        query = query.options(
+            selectinload(ContactLink.contact),
+            selectinload(ContactLink.page),
+            selectinload(ContactLink.campaign)
+        ).order_by(ContactLink.created_at.desc())
+
+        result = await db.execute(query)
+        rows = list(result.scalars().all())
+
+        return self._create_excel_workbook(rows)
 
 
 # Module-level singleton

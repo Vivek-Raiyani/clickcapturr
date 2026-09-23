@@ -20,7 +20,7 @@ import { ContactsTable } from "@/components/features/contacts/ContactsTable";
 import { useAuth } from "@/context/AuthContext";
 import {
   Activity, Users, ExternalLink, Trash2, ArrowLeft, ArrowRight,
-  Megaphone, LayoutTemplate, Pencil, Edit, Copy, Check, Plus, Link2, QrCode, BarChart3
+  Megaphone, LayoutTemplate, Pencil, Edit, Copy, Check, Plus, Link2, QrCode, BarChart3, TrendingUp
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -566,7 +566,7 @@ export default function CampaignDetails() {
                 Campaign Overview
               </h2>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
                 <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
                   <div>
                     <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
@@ -617,6 +617,22 @@ export default function CampaignDetails() {
                     </p>
                   </div>
                   <p className="text-[10px] text-muted-foreground mt-3">From connected pages</p>
+                </div>
+
+                <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                      <TrendingUp className="w-3.5 h-3.5" />
+                      Conversion Rate
+                    </h3>
+                    <p className="text-3xl font-bold text-foreground">
+                      {(() => {
+                        const totalViews = campaignData.links.reduce((acc, link) => acc + (link.platform_views || 0), 0);
+                        return totalViews ? ((campaignData.total_lead_captures || 0) / totalViews * 100).toFixed(1) : 0;
+                      })()}%
+                    </p>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-3">Contacts per view</p>
                 </div>
               </div>
 

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { DEFAULT_PAGE_BUILDER_STATE, PageBuilderState } from "@/components/page-builder/types";
 import { getPage, deletePage, mapPayloadToState, PageResponse } from "@/lib/api/pages";
 import { updateCampaignLink } from "@/lib/api/campaigns";
-import { Activity, Users, ExternalLink, Pencil, Trash2, ArrowLeft, Copy, QrCode, Check } from "lucide-react";
+import { Activity, Users, ExternalLink, Pencil, Trash2, ArrowLeft, Copy, QrCode, Check, TrendingUp } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { QrPreview } from "@/components/features/links/QrPreview";
 import { QRConfig } from "@/types/qr";
@@ -204,7 +204,7 @@ export default function PageDetails() {
             </div>
           )}
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
             <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
               <div>
                 <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
@@ -247,6 +247,17 @@ export default function PageDetails() {
                 <p className="text-3xl font-bold">{pageData.total_lead_captures || 0}</p>
               </div>
               <p className="text-[10px] text-muted-foreground mt-3">From form submissions</p>
+            </div>
+
+            <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+              <div>
+                <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                  <TrendingUp className="w-3.5 h-3.5" />
+                  Conversion Rate
+                </h3>
+                <p className="text-3xl font-bold">{pageData.total_visits ? ((pageData.total_lead_captures || 0) / pageData.total_visits * 100).toFixed(1) : 0}%</p>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-3">Contacts per view</p>
             </div>
           </div>
 

@@ -36,6 +36,7 @@ import { DEFAULT_PAGE_BUILDER_STATE, type PageBuilderState } from "./types";
 import { updatePageAction } from "@/actions/page.actions";
 import { listSubmissionsAction, exportLeadsCsvAction } from "@/actions/form.actions";
 import { getAnalyticsSummaryAction } from "@/actions/analytics.actions";
+import { updateCampaignLink } from "@/lib/api/campaigns";
 import { useSidebar } from "@/context/SidebarContext";
 
 export interface PageDetailManagerProps {
@@ -94,7 +95,7 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
   const qrLink = links.find((l) => l.type === "qr");
   const shortLink = links.find((l) => l.type === "short_link");
   
-  const qrLinkUrl = qrLink ? `${origin}/s/${qrLink.shortCode}` : publicPageUrl;
+  const qrLinkUrl = qrLink ? `${origin}/qr/${qrLink.shortCode.split('').reverse().join('')}` : publicPageUrl;
   const shortLinkUrl = shortLink ? `${origin}/s/${shortLink.shortCode}` : publicPageUrl;
 
   // Load analytics & submissions for this page
@@ -231,18 +232,18 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
 
   const [isQrSaving, setIsQrSaving] = useState(false);
   const handleSaveQrConfig = async (config: import("@/types/qr").QRConfig) => {
+    if (!qrLink) {
+      alert("No QR link found for this page.");
+      return;
+    }
     setIsQrSaving(true);
-    const updatedTheme = {
-      ...(page.themeJson || DEFAULT_PAGE_BUILDER_STATE.theme),
-      qrConfig: config,
-    };
-    const res = await updatePageAction(page.id, { themeJson: updatedTheme as any });
-    setIsQrSaving(false);
-
-    if (res.success && res.data) {
-      setPage(res.data);
-    } else {
-      alert(res.error || "Failed to save QR configuration");
+    try {
+      await updateCampaignLink(qrLink.id as string, { qr_config: config });
+      alert("QR configuration saved successfully!");
+    } catch (err: any) {
+      alert(err.message || "Failed to save QR configuration");
+    } finally {
+      setIsQrSaving(false);
     }
   };
 
@@ -423,7 +424,7 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
                 url={qrLinkUrl}
                 title="Scannable QR Target"
                 shortCode={qrLink?.shortCode || page.slug}
-                initialConfig={page.themeJson?.qrConfig || null}
+                initialConfig={(qrLink as any)?.qr_config || null}
                 onSaveConfig={handleSaveQrConfig}
                 isSaving={isQrSaving}
               />

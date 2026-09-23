@@ -9,6 +9,7 @@ import {
   updateCampaign,
   createCampaignLink,
   deleteCampaignLink,
+  updateCampaignLink,
   CampaignResponse,
   LinkResponse,
 } from "@/lib/api/campaigns";
@@ -19,6 +20,8 @@ import {
 } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { QrPreview } from "@/components/features/links/QrPreview";
+import { QRConfig } from "@/types/qr";
 
 const PLATFORM_OPTIONS = [
   { value: "", label: "— None —" },
@@ -76,6 +79,23 @@ export default function CampaignDetails() {
   // Delete Link
   const [confirmDeleteLinkId, setConfirmDeleteLinkId] = useState<string | null>(null);
   const [deletingLinkId, setDeletingLinkId] = useState<string | null>(null);
+  
+  // QR config
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [isQrSaving, setIsQrSaving] = useState(false);
+  const handleSaveQrConfig = async (linkId: string, config: QRConfig) => {
+    try {
+      setIsQrSaving(true);
+      await updateCampaignLink(linkId, { qr_config: config });
+      await loadCampaign();
+      setQrModalOpen(false);
+    } catch (err: any) {
+      console.error("Failed to save QR config:", err);
+      alert(`Failed to save QR config: ${err.message}`);
+    } finally {
+      setIsQrSaving(false);
+    }
+  };
 
   const loadCampaign = async () => {
     try {
@@ -560,6 +580,14 @@ export default function CampaignDetails() {
                     >
                       {copiedLinkId === activeLinkData.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                     </button>
+                    <button
+                      onClick={() => setQrModalOpen(true)}
+                      className="bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-primary/20 transition-colors flex items-center justify-center gap-2 ml-2"
+                      title="Customize QR Code"
+                    >
+                      <QrCode className="w-4 h-4" />
+                      QR Code
+                    </button>
                   </div>
                 </div>
                 
@@ -575,21 +603,13 @@ export default function CampaignDetails() {
                 </div>
               </div>
 
-              {/* QR Code Section Placeholder */}
-              <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
-                <div className="p-4 border-b border-border bg-muted/30">
-                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                    <QrCode className="w-4 h-4" />
-                    QR Code Configuration
-                  </h3>
-                </div>
-                <div className="p-12 text-center flex flex-col items-center justify-center bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-opacity-5">
-                  <QrCode className="w-16 h-16 text-muted-foreground/20 mb-4" />
-                  <h4 className="text-lg font-medium text-foreground mb-2">Design Your QR Code</h4>
-                  <p className="text-sm text-muted-foreground max-w-md">
-                    Custom colors, patterns, and logos will be configurable here soon. Each link gets its own unique QR code that tracks scans independently.
-                  </p>
-                </div>
+              {/* Analytics Placeholder */}
+              <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm p-8 flex flex-col items-center justify-center text-center min-h-[300px]">
+                <BarChart3 className="w-12 h-12 text-muted-foreground/30 mb-4" />
+                <h3 className="text-lg font-medium text-foreground mb-2">Detailed Analytics</h3>
+                <p className="text-sm text-muted-foreground max-w-sm">
+                  Detailed charts and conversion metrics for this specific link will appear here soon.
+                </p>
               </div>
 
             </div>
@@ -798,6 +818,27 @@ export default function CampaignDetails() {
             </button>
           </div>
         </div>
+      </Modal>
+
+      {/* QR Code Modal */}
+      <Modal
+        open={qrModalOpen}
+        onClose={() => setQrModalOpen(false)}
+        title="Configure QR Code"
+        maxWidth="4xl"
+      >
+        {activeLinkData && (
+          <div className="p-4">
+            <QrPreview 
+              url={typeof window !== "undefined" ? `${window.location.origin}/qr/${activeLinkData.shortcode.split('').reverse().join('')}` : `/qr/${activeLinkData.shortcode.split('').reverse().join('')}`}
+              title={`${activeLinkData.label || "Link"} QR Code`}
+              shortCode={activeLinkData.shortcode}
+              initialConfig={activeLinkData.qr_config || null}
+              onSaveConfig={(config) => handleSaveQrConfig(activeLinkData.id, config)}
+              isSaving={isQrSaving}
+            />
+          </div>
+        )}
       </Modal>
     </div>
   );

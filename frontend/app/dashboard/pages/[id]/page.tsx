@@ -5,7 +5,11 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { DEFAULT_PAGE_BUILDER_STATE, PageBuilderState } from "@/components/page-builder/types";
 import { getPage, deletePage, mapPayloadToState, PageResponse } from "@/lib/api/pages";
+import { updateCampaignLink } from "@/lib/api/campaigns";
 import { Activity, Users, ExternalLink, Pencil, Trash2, ArrowLeft, Copy, QrCode, Check } from "lucide-react";
+import { Modal } from "@/components/ui/Modal";
+import { QrPreview } from "@/components/features/links/QrPreview";
+import { QRConfig } from "@/types/qr";
 
 export default function PageDetails() {
   const router = useRouter();
@@ -17,6 +21,26 @@ export default function PageDetails() {
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [qrModalOpen, setQrModalOpen] = useState(false);
+  const [isQrSaving, setIsQrSaving] = useState(false);
+
+  const handleSaveQrConfig = async (config: QRConfig) => {
+    if (!pageData?.link?.id) return;
+    setIsQrSaving(true);
+    try {
+      await updateCampaignLink(pageData.link.id, { qr_config: config });
+      setPageData(prev => prev ? ({
+        ...prev,
+        link: { ...prev.link, qr_config: config }
+      }) : null);
+      setQrModalOpen(false);
+    } catch (err: any) {
+      alert(err.message || "Failed to save QR configuration");
+    } finally {
+      setIsQrSaving(false);
+    }
+  };
 
   useEffect(() => {
     const loadPage = async () => {
@@ -178,6 +202,7 @@ export default function PageDetails() {
                   </button>
                 </div>
                 <button
+                  onClick={() => setQrModalOpen(true)}
                   className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors flex items-center justify-center gap-2"
                 >
                   <QrCode className="w-4 h-4" />
@@ -247,6 +272,27 @@ export default function PageDetails() {
           </div>
         </div>
       )}
+
+      {/* QR Code Modal */}
+      <Modal 
+        open={qrModalOpen} 
+        onClose={() => setQrModalOpen(false)} 
+        title="Configure QR Code" 
+        maxWidth="4xl"
+      >
+        {pageData?.link && (
+          <div className="p-4">
+            <QrPreview
+              url={typeof window !== "undefined" ? `${window.location.origin}/qr/${pageData.link.shortcode.split('').reverse().join('')}` : `/qr/${pageData.link.shortcode.split('').reverse().join('')}`}
+              title="Page Link QR Code"
+              shortCode={pageData.link.shortcode}
+              initialConfig={pageData.link.qr_config || null}
+              onSaveConfig={handleSaveQrConfig}
+              isSaving={isQrSaving}
+            />
+          </div>
+        )}
+      </Modal>
     </div>
   );
 }

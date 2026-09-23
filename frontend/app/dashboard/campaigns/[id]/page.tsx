@@ -36,7 +36,7 @@ const PLATFORM_OPTIONS = [
   { value: "other", label: "Other" },
 ];
 
-type ActiveView = 
+type ActiveView =
   | { type: "overview" }
   | { type: "leads" }
   | { type: "link", linkId: string };
@@ -94,13 +94,23 @@ export default function CampaignDetails() {
   const [createLinkModalOpen, setCreateLinkModalOpen] = useState(false);
   const [newLinkLabel, setNewLinkLabel] = useState("");
   const [newLinkPlatform, setNewLinkPlatform] = useState("");
+  const [newLinkPlatformId, setNewLinkPlatformId] = useState("");
   const [creatingLink, setCreatingLink] = useState(false);
   const [createLinkError, setCreateLinkError] = useState<string | null>(null);
 
   // Delete Link
   const [confirmDeleteLinkId, setConfirmDeleteLinkId] = useState<string | null>(null);
   const [deletingLinkId, setDeletingLinkId] = useState<string | null>(null);
-  
+
+  // Edit Link
+  const [editLinkModalOpen, setEditLinkModalOpen] = useState(false);
+  const [editLinkLabel, setEditLinkLabel] = useState("");
+  const [editLinkPlatform, setEditLinkPlatform] = useState("");
+  const [editLinkPlatformId, setEditLinkPlatformId] = useState("");
+  const [editingLink, setEditingLink] = useState(false);
+  const [editLinkError, setEditLinkError] = useState<string | null>(null);
+  const [editLinkId, setEditLinkId] = useState<string | null>(null);
+
   // QR config
   const [qrModalOpen, setQrModalOpen] = useState(false);
   const [isQrSaving, setIsQrSaving] = useState(false);
@@ -229,7 +239,7 @@ export default function CampaignDetails() {
       setCreateLinkError("Label is required to identify this link.");
       return;
     }
-    
+
     try {
       setCreatingLink(true);
       setCreateLinkError(null);
@@ -237,11 +247,13 @@ export default function CampaignDetails() {
         campaign_id: campaignId,
         label: newLinkLabel.trim() || undefined,
         platform: newLinkPlatform || undefined,
+        platform_content_id: newLinkPlatformId.trim() || undefined,
       });
       await loadCampaign();
       setCreateLinkModalOpen(false);
       setNewLinkLabel("");
       setNewLinkPlatform("");
+      setNewLinkPlatformId("");
       // Select the newly created link
       setActiveView({ type: "link", linkId: newLink.id });
     } catch (err: any) {
@@ -257,18 +269,54 @@ export default function CampaignDetails() {
       setDeletingLinkId(confirmDeleteLinkId);
       await deleteCampaignLink(confirmDeleteLinkId);
       await loadCampaign();
-      
+
       // If we deleted the currently active link, switch back to overview
       if (activeView.type === "link" && activeView.linkId === confirmDeleteLinkId) {
         setActiveView({ type: "overview" });
       }
-      
+
       setConfirmDeleteLinkId(null);
     } catch (err: any) {
       console.error("Failed to delete link:", err);
       alert(`Failed to delete link: ${err.message}`);
     } finally {
       setDeletingLinkId(null);
+    }
+  };
+
+  const openEditLinkModal = (linkId: string) => {
+    const link = campaignData?.links.find(l => l.id === linkId);
+    if (link) {
+      setEditLinkId(link.id);
+      setEditLinkLabel(link.label || "");
+      setEditLinkPlatform(link.platform || "");
+      setEditLinkPlatformId(link.platform_content_id || "");
+      setEditLinkError(null);
+      setEditLinkModalOpen(true);
+    }
+  };
+
+  const handleEditLink = async () => {
+    if (!editLinkId) return;
+    if (!editLinkLabel.trim()) {
+      setEditLinkError("Label is required to identify this link.");
+      return;
+    }
+
+    try {
+      setEditingLink(true);
+      setEditLinkError(null);
+      await updateCampaignLink(editLinkId, {
+        label: editLinkLabel.trim() || undefined,
+        platform: editLinkPlatform || undefined,
+        platform_content_id: editLinkPlatformId.trim() || undefined,
+      });
+      await loadCampaign();
+      setEditLinkModalOpen(false);
+    } catch (err: any) {
+      setEditLinkError(err.message || "Failed to update link.");
+    } finally {
+      setEditingLink(false);
     }
   };
 
@@ -300,9 +348,9 @@ export default function CampaignDetails() {
   }
 
   const linkToDelete = campaignData.links.find(l => l.id === confirmDeleteLinkId);
-  
+
   // Find active link data if a link is selected
-  const activeLinkData = activeView.type === "link" 
+  const activeLinkData = activeView.type === "link"
     ? campaignData.links.find(l => l.id === activeView.linkId)
     : null;
 
@@ -350,31 +398,29 @@ export default function CampaignDetails() {
 
       {/* ── Main Layout Split ── */}
       <div className="flex flex-col lg:flex-row gap-5 items-start">
-        
+
         {/* ── Left Sidebar ── */}
         <div className="w-full lg:w-64 shrink-0 flex flex-col gap-4 lg:sticky lg:top-6">
-          
+
           {/* Main Navigation */}
           <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
             <div className="p-2 flex flex-col gap-1">
               <button
                 onClick={() => setActiveView({ type: "overview" })}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  activeView.type === "overview"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeView.type === "overview"
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
+                  }`}
               >
                 <Activity className="w-4 h-4" />
                 Campaign Overview
               </button>
               <button
                 onClick={() => setActiveView({ type: "leads" })}
-                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  activeView.type === "leads"
+                className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${activeView.type === "leads"
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                }`}
+                  }`}
               >
                 <Users className="w-4 h-4" />
                 Leads & Contacts
@@ -393,7 +439,7 @@ export default function CampaignDetails() {
                 {campaignData.links.length}
               </span>
             </div>
-            
+
             <div className="flex-1 overflow-y-auto p-2 space-y-1">
               {campaignData.links.length === 0 ? (
                 <div className="p-4 text-center text-sm text-muted-foreground italic">
@@ -406,11 +452,10 @@ export default function CampaignDetails() {
                     <div
                       key={link.id}
                       onClick={() => setActiveView({ type: "link", linkId: link.id })}
-                      className={`group flex items-center justify-between p-2 rounded-lg text-sm cursor-pointer transition-colors ${
-                        isActive 
-                          ? "bg-primary text-primary-foreground" 
+                      className={`group flex items-center justify-between p-2 rounded-lg text-sm cursor-pointer transition-colors ${isActive
+                          ? "bg-primary text-primary-foreground"
                           : "hover:bg-muted text-foreground"
-                      }`}
+                        }`}
                     >
                       <div className="flex flex-col min-w-0">
                         <span className="font-medium truncate">
@@ -422,15 +467,18 @@ export default function CampaignDetails() {
                           </span>
                         )}
                       </div>
-                      
+
                       {/* Action buttons (appear on hover/active) */}
                       <div className={`flex items-center gap-1 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"} transition-opacity`}>
                         <button
-                          onClick={(e) => handleCopyLink(e, link.shortcode, link.id)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openEditLinkModal(link.id);
+                          }}
                           className={`p-1.5 rounded-md transition-colors ${isActive ? "hover:bg-primary-foreground/20 text-primary-foreground" : "hover:bg-background text-muted-foreground"}`}
-                          title="Copy Link"
+                          title="Edit Link"
                         >
-                          {copiedLinkId === link.id ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                          <Pencil className="w-3.5 h-3.5" />
                         </button>
                         <button
                           onClick={(e) => {
@@ -454,6 +502,7 @@ export default function CampaignDetails() {
                 onClick={() => {
                   setNewLinkLabel("");
                   setNewLinkPlatform("");
+                  setNewLinkPlatformId("");
                   setCreateLinkError(null);
                   setCreateLinkModalOpen(true);
                 }}
@@ -468,7 +517,7 @@ export default function CampaignDetails() {
 
         {/* ── Right Content Area ── */}
         <div className="flex-1 w-full flex flex-col gap-5 min-w-0">
-          
+
           {/* Always show what page is attached at the top of the right pane */}
           <div className="bg-card border border-border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
             <div className="flex items-center gap-3">
@@ -484,7 +533,7 @@ export default function CampaignDetails() {
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <button
                 onClick={() => {
@@ -516,7 +565,7 @@ export default function CampaignDetails() {
                 <Activity className="w-5 h-5 text-primary" />
                 Campaign Overview
               </h2>
-              
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col justify-between">
                   <div>
@@ -532,7 +581,7 @@ export default function CampaignDetails() {
                     <p className="text-xs text-muted-foreground mt-4">No traffic recorded yet</p>
                   )}
                 </div>
-                
+
                 <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col justify-between">
                   <div>
                     <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
@@ -573,8 +622,13 @@ export default function CampaignDetails() {
                         {activeLinkData.platform}
                       </span>
                     )}
+                    {activeLinkData.platform_content_id && (
+                      <span className="text-[10px] bg-muted border border-border tracking-wider px-2 py-0.5 rounded-full text-muted-foreground ml-2">
+                        ID: {activeLinkData.platform_content_id}
+                      </span>
+                    )}
                   </div>
-                  
+
                   <div className="flex items-center gap-2 mt-3">
                     <div className="bg-muted border border-border rounded-md px-3 py-1.5 flex items-center">
                       <span className="text-sm font-mono text-muted-foreground truncate max-w-[200px] sm:max-w-md">
@@ -600,7 +654,7 @@ export default function CampaignDetails() {
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="flex gap-4 bg-card border border-border p-3 rounded-lg shadow-sm">
                   <div className="flex flex-col items-center px-4 border-r border-border">
                     <span className="text-2xl font-bold text-foreground leading-none">{activeLinkData.total_clicks}</span>
@@ -668,6 +722,24 @@ export default function CampaignDetails() {
             </select>
           </div>
 
+          {newLinkPlatform && newLinkPlatform !== "" && newLinkPlatform !== "other" && (
+            <div className="animate-in fade-in duration-300">
+              <label className="text-sm font-medium text-foreground mb-1.5 block">
+                Platform Content ID <span className="text-muted-foreground font-normal">(optional)</span>
+              </label>
+              <input
+                type="text"
+                placeholder={`e.g. Video ID for ${PLATFORM_OPTIONS.find(o => o.value === newLinkPlatform)?.label || "Platform"}`}
+                value={newLinkPlatformId}
+                onChange={(e) => setNewLinkPlatformId(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/60 transition-colors placeholder:text-muted-foreground/50"
+              />
+              <p className="text-[11px] text-muted-foreground mt-1.5">
+                Adding the ID allows us to automatically fetch content stats (views, likes, etc.) from the platform.
+              </p>
+            </div>
+          )}
+
           {createLinkError && (
             <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
               {createLinkError}
@@ -696,6 +768,93 @@ export default function CampaignDetails() {
                   <Plus className="w-3.5 h-3.5" />
                   Create Link
                 </>
+              )}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
+      <Modal
+        open={editLinkModalOpen}
+        onClose={() => setEditLinkModalOpen(false)}
+        title="Edit Campaign Link"
+        description="Update the label, platform, and content ID for this link."
+        maxWidth="md"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="text-sm font-medium text-foreground mb-1.5 block">
+              Label <span className="text-red-400">*</span>
+            </label>
+            <input
+              type="text"
+              placeholder='e.g. "YouTube Main Video"'
+              value={editLinkLabel}
+              onChange={(e) => setEditLinkLabel(e.target.value)}
+              className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/60 transition-colors placeholder:text-muted-foreground/50"
+            />
+          </div>
+
+          <div>
+            <label className="text-sm font-medium text-foreground mb-1.5 block">
+              Platform <span className="text-muted-foreground font-normal">(optional)</span>
+            </label>
+            <select
+              value={editLinkPlatform}
+              onChange={(e) => setEditLinkPlatform(e.target.value)}
+              className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/60 transition-colors"
+            >
+              {PLATFORM_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>
+                  {o.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {editLinkPlatform && editLinkPlatform !== "" && editLinkPlatform !== "other" && (
+            <div className="animate-in fade-in duration-300">
+              <label className="text-sm font-medium text-foreground mb-1.5 block">
+                Platform Content ID <span className="text-muted-foreground font-normal">(optional)</span>
+              </label>
+              <input
+                type="text"
+                placeholder={`e.g. Video ID for ${PLATFORM_OPTIONS.find(o => o.value === editLinkPlatform)?.label || "Platform"}`}
+                value={editLinkPlatformId}
+                onChange={(e) => setEditLinkPlatformId(e.target.value)}
+                className="w-full bg-background border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground focus:outline-none focus:border-primary/60 transition-colors placeholder:text-muted-foreground/50"
+              />
+              <p className="text-[11px] text-muted-foreground mt-1.5">
+                Adding the ID allows us to automatically fetch content stats (views, likes, etc.) from the platform.
+              </p>
+            </div>
+          )}
+
+          {editLinkError && (
+            <p className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+              {editLinkError}
+            </p>
+          )}
+
+          <div className="flex justify-end gap-3 pt-2">
+            <button
+              onClick={() => setEditLinkModalOpen(false)}
+              className="px-4 py-2 rounded-xl text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleEditLink}
+              disabled={editingLink}
+              className="bg-primary text-primary-foreground px-6 py-2 rounded-xl text-sm font-medium hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
+            >
+              {editingLink ? (
+                <>
+                  <div className="w-3.5 h-3.5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                "Save Changes"
               )}
             </button>
           </div>
@@ -839,7 +998,7 @@ export default function CampaignDetails() {
       >
         {activeLinkData && (
           <div className="p-4">
-            <QrPreview 
+            <QrPreview
               url={typeof window !== "undefined" ? `${window.location.origin}/qr/${activeLinkData.shortcode.split('').reverse().join('')}` : `/qr/${activeLinkData.shortcode.split('').reverse().join('')}`}
               title={`${activeLinkData.label || "Link"} QR Code`}
               shortCode={activeLinkData.shortcode}

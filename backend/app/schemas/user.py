@@ -22,10 +22,21 @@ class UserCreateOAuth(UserBase):
 class UserLogin(UserBase):
     password: str
 
+class UserUpdate(BaseModel):
+    first_name: str | None = None
+    last_name: str | None = None
+    email: EmailStr | None = None
+
+class UserUpdatePassword(BaseModel):
+    current_password: str
+    new_password: str
+
 class UserOut(UserBase):
     id: UUID
     is_active: bool
     is_superuser: bool
+    first_name: str | None = None
+    last_name: str | None = None
 
     class Config:
         from_attributes = True

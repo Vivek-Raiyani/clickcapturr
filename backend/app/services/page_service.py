@@ -19,6 +19,8 @@ from sqlalchemy.future import select
 from app.models.page import Page
 from app.schemas.page import PageCreate, PageUpdate
 from app.services.campaign_service import campaign_service
+from app.services.link_service import link_service
+from app.schemas.link import LinkCreate
 
 logger = logging.getLogger(__name__)
 
@@ -60,8 +62,20 @@ class PageService:
         await db.commit()
         await db.refresh(db_page)
 
-        logger.info("Page created successfully: id='%s'", db_page.id)
-        return db_page
+        page_id = db_page.id
+        logger.info("Page created successfully: id='%s'", page_id)
+        
+        # Auto-generate link for the new page
+        link_in = LinkCreate(page_id=page_id)
+        await link_service.create_link(db, user_id, link_in)
+        
+        # Re-fetch with relationships loaded
+        result = await db.execute(
+            select(Page)
+            .where(Page.id == page_id)
+            .execution_options(populate_existing=True)
+        )
+        return result.scalar_one()
 
     # ------------------------------------------------------------------
     # READ
@@ -211,7 +225,14 @@ class PageService:
 
         try:
             await db.commit()
-            await db.refresh(db_page)
+            # Do not use db.refresh here as it expires relationships
+            # Instead re-fetch the object with relationships loaded
+            result = await db.execute(
+                select(Page)
+                .where(Page.id == page_id)
+                .execution_options(populate_existing=True)
+            )
+            db_page = result.scalar_one()
         except Exception as e:
             logger.error("Database error while updating page id='%s': %s", page_id, str(e), exc_info=True)
             await db.rollback()

@@ -4,6 +4,8 @@ from uuid import UUID
 from datetime import datetime
 from enum import StrEnum
 
+from app.schemas.link import LinkResponse
+
 # ---------------------------------------------------------------------------
 # Enums — used as discriminator / literal type keys across all block schemas
 # ---------------------------------------------------------------------------
@@ -168,6 +170,7 @@ class PageResponse(PageBase):
     user_id: UUID
     created_at: datetime
     updated_at: datetime
+    link: Optional[LinkResponse] = None
 
     class Config:
         from_attributes = True

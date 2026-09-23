@@ -9,6 +9,8 @@ from sqlalchemy import update
 
 from app.models.campaign import Campaign
 from app.schemas.campaign import CampaignCreate, CampaignUpdate
+from app.services.link_service import link_service
+from app.schemas.link import LinkCreate
 
 logger = logging.getLogger(__name__)
 
@@ -26,8 +28,20 @@ class CampaignService:
         await db.commit()
         await db.refresh(db_campaign)
 
-        logger.info("Campaign created successfully: id='%s'", db_campaign.id)
-        return db_campaign
+        campaign_id = db_campaign.id
+        logger.info("Campaign created successfully: id='%s'", campaign_id)
+        
+        # Auto-generate link for the new campaign
+        link_in = LinkCreate(campaign_id=campaign_id)
+        await link_service.create_link(db, user_id, link_in)
+        
+        # Re-fetch with relationships loaded
+        result = await db.execute(
+            select(Campaign)
+            .where(Campaign.id == campaign_id)
+            .execution_options(populate_existing=True)
+        )
+        return result.scalar_one()
 
     async def get_campaigns_for_user(
         self, db: AsyncSession, user_id: UUID
@@ -80,7 +94,14 @@ class CampaignService:
             setattr(db_campaign, key, value)
 
         await db.commit()
-        await db.refresh(db_campaign)
+        # Do not use db.refresh here as it expires relationships
+        # Instead re-fetch the object with relationships loaded
+        result = await db.execute(
+            select(Campaign)
+            .where(Campaign.id == campaign_id)
+            .execution_options(populate_existing=True)
+        )
+        db_campaign = result.scalar_one()
 
         return db_campaign
 

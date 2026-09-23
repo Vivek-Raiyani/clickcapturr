@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { getCampaign, deleteCampaign, updateCampaign, CampaignResponse } from "@/lib/api/campaigns";
 import { getPage, getPages, PageResponse } from "@/lib/api/pages";
-import { Activity, Users, ExternalLink, Trash2, ArrowLeft, ArrowRight, Megaphone, LayoutTemplate, Pencil, Edit } from "lucide-react";
+import { Activity, Users, ExternalLink, Trash2, ArrowLeft, ArrowRight, Megaphone, LayoutTemplate, Pencil, Edit, Copy, Check, QrCode } from "lucide-react";
 import { Modal } from "@/components/ui/Modal";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 
@@ -19,6 +19,7 @@ export default function CampaignDetails() {
   const [pageData, setPageData] = useState<PageResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
 
   const [pagesList, setPagesList] = useState<PageResponse[]>([]);
   const [editPageModalOpen, setEditPageModalOpen] = useState(false);
@@ -136,6 +137,13 @@ export default function CampaignDetails() {
       setDeleting(false);
       setShowDeleteConfirm(false);
     }
+  };
+
+  const handleCopyLink = (shortcode: string, linkId: string) => {
+    const url = `${window.location.origin}/s/${shortcode}`;
+    navigator.clipboard.writeText(url);
+    setCopiedLinkId(linkId);
+    setTimeout(() => setCopiedLinkId(null), 2000);
   };
 
   if (loading) {
@@ -280,21 +288,69 @@ export default function CampaignDetails() {
       {/* Tab: Overview */}
       {activeTab === "overview" && (
         <div className="space-y-6">
+          {/* Links Section */}
+          {campaignData.links && campaignData.links.length > 0 && (
+            <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-sm font-medium text-foreground">Campaign Links</h3>
+              </div>
+              <div className="space-y-3">
+                {campaignData.links.map(link => (
+                  <div key={link.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 border border-border rounded-lg bg-background">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full">
+                      <div className="flex items-center bg-muted border border-border rounded-lg overflow-hidden flex-1 sm:max-w-md">
+                        <span className="px-3 py-2 text-sm font-mono text-muted-foreground border-r border-border bg-background truncate flex-1">
+                          {typeof window !== 'undefined' ? `${window.location.origin}/s/${link.shortcode}` : `/s/${link.shortcode}`}
+                        </span>
+                        <button 
+                          onClick={() => handleCopyLink(link.shortcode, link.id)}
+                          className="p-2 hover:bg-background transition-colors text-foreground flex items-center justify-center w-10 shrink-0"
+                          title="Copy Link"
+                        >
+                          {copiedLinkId === link.id ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                        </button>
+                      </div>
+                      
+                      <div className="flex items-center gap-4 text-sm text-muted-foreground ml-auto whitespace-nowrap">
+                        <div className="flex flex-col items-end">
+                          <span className="font-medium text-foreground">{link.total_clicks}</span>
+                          <span className="text-xs">Clicks</span>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <span className="font-medium text-foreground">{link.total_scans}</span>
+                          <span className="text-xs">Scans</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">Campaign Clicks</h3>
-              <p className="text-4xl font-bold">0</p>
-              <p className="text-xs text-muted-foreground mt-2">No data yet</p>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3">Total Visits</h3>
+              <p className="text-4xl font-bold">{campaignData.total_visits || 0}</p>
+              {campaignData.total_visits > 0 ? (
+                <p className="text-xs text-green-500 mt-2 font-medium">Tracking active</p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-2">No data yet</p>
+              )}
             </div>
             <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-              <h3 className="text-sm font-medium text-muted-foreground mb-3">Conversion Rate</h3>
-              <p className="text-4xl font-bold">0%</p>
-              <p className="text-xs text-muted-foreground mt-2">No data yet</p>
+              <h3 className="text-sm font-medium text-muted-foreground mb-3">Contacts Captured</h3>
+              <p className="text-4xl font-bold">{campaignData.total_lead_captures || 0}</p>
+              {campaignData.total_lead_captures > 0 ? (
+                <p className="text-xs text-green-500 mt-2 font-medium">Tracking active</p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-2">No data yet</p>
+              )}
             </div>
             <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
               <h3 className="text-sm font-medium text-muted-foreground mb-3">Total Spend</h3>
               <p className="text-4xl font-bold">$0</p>
-              <p className="text-xs text-muted-foreground mt-2">No data yet</p>
+              <p className="text-xs text-muted-foreground mt-2">Coming soon</p>
             </div>
           </div>
 

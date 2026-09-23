@@ -5,7 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { DEFAULT_PAGE_BUILDER_STATE, PageBuilderState } from "@/components/page-builder/types";
 import { getPage, deletePage, mapPayloadToState, PageResponse } from "@/lib/api/pages";
-import { Activity, Users, ExternalLink, Pencil, Trash2, ArrowLeft } from "lucide-react";
+import { Activity, Users, ExternalLink, Pencil, Trash2, ArrowLeft, Copy, QrCode, Check } from "lucide-react";
 
 export default function PageDetails() {
   const router = useRouter();
@@ -14,6 +14,7 @@ export default function PageDetails() {
 
   const [activeTab, setActiveTab] = useState<"overview" | "leads">("overview");
   const [pageData, setPageData] = useState<PageResponse | null>(null);
+  const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +45,14 @@ export default function PageDetails() {
         alert(`Failed to delete: ${error.message}`);
       }
     }
+  };
+
+  const handleCopyLink = () => {
+    if (!pageData?.link) return;
+    const url = `${window.location.origin}/s/${pageData.link.shortcode}`;
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (loading) {
@@ -148,21 +157,63 @@ export default function PageDetails() {
       {/* Tab: Overview */}
       {activeTab === "overview" && (
         <div className="space-y-6">
+          {/* Link Share Section */}
+          {pageData.link && (
+            <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="text-sm font-medium text-foreground mb-1">Share your page</h3>
+                <p className="text-xs text-muted-foreground">Use this short link to drive traffic and track views.</p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <div className="flex items-center bg-muted border border-border rounded-lg overflow-hidden">
+                  <span className="px-3 py-2 text-sm font-mono text-muted-foreground border-r border-border bg-background truncate max-w-[200px] sm:max-w-none">
+                    {typeof window !== 'undefined' ? `${window.location.origin}/s/${pageData.link.shortcode}` : `/s/${pageData.link.shortcode}`}
+                  </span>
+                  <button 
+                    onClick={handleCopyLink}
+                    className="p-2 hover:bg-background transition-colors text-foreground flex items-center justify-center w-10"
+                    title="Copy Link"
+                  >
+                    {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
+                  </button>
+                </div>
+                <button
+                  className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors flex items-center justify-center gap-2"
+                >
+                  <QrCode className="w-4 h-4" />
+                  QR Code
+                </button>
+              </div>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
               <h3 className="text-sm font-medium text-muted-foreground mb-3">Total Views</h3>
-              <p className="text-4xl font-bold">0</p>
-              <p className="text-xs text-muted-foreground mt-2">No data yet</p>
+              <p className="text-4xl font-bold">{pageData.total_visits || 0}</p>
+              {pageData.total_visits > 0 ? (
+                <p className="text-xs text-green-500 mt-2 font-medium">Tracking active</p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-2">No data yet</p>
+              )}
             </div>
             <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
               <h3 className="text-sm font-medium text-muted-foreground mb-3">QR Scans</h3>
-              <p className="text-4xl font-bold">0</p>
-              <p className="text-xs text-muted-foreground mt-2">No data yet</p>
+              <p className="text-4xl font-bold">{pageData.link?.total_scans || 0}</p>
+              {pageData.link?.total_scans ? (
+                <p className="text-xs text-green-500 mt-2 font-medium">Tracking active</p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-2">No data yet</p>
+              )}
             </div>
             <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
               <h3 className="text-sm font-medium text-muted-foreground mb-3">Contacts Captured</h3>
-              <p className="text-4xl font-bold">0</p>
-              <p className="text-xs text-muted-foreground mt-2">No data yet</p>
+              <p className="text-4xl font-bold">{pageData.total_lead_captures || 0}</p>
+              {pageData.total_lead_captures > 0 ? (
+                <p className="text-xs text-green-500 mt-2 font-medium">Tracking active</p>
+              ) : (
+                <p className="text-xs text-muted-foreground mt-2">No data yet</p>
+              )}
             </div>
           </div>
 

@@ -1,7 +1,9 @@
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 from datetime import datetime
+
+from app.schemas.link import LinkResponse
 
 class CampaignBase(BaseModel):
     title: str
@@ -21,6 +23,9 @@ class CampaignResponse(CampaignBase):
     user_id: UUID
     created_at: datetime
     updated_at: datetime
+    total_visits: int
+    total_lead_captures: int
+    links: List[LinkResponse] = []
 
     class Config:
         from_attributes = True

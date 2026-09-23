@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 from typing import Optional, Dict, Any, List
 from uuid import UUID
 from datetime import datetime
@@ -57,12 +57,11 @@ class SuccessEffectType(StrEnum):
 
 
 class ThemeSchema(BaseModel):
+    model_config = ConfigDict(populate_by_name=True)
+    
     primary: Optional[str] = Field(None, description="Background color")
     secondary: Optional[str] = Field(None, description="Fonts color")
     tertiary: Optional[str] = Field(None, alias="tersory color", description="Border color")
-
-    class Config:
-        populate_by_name = True
 
 class HeroSchema(BaseModel):
     type: HeroType
@@ -116,12 +115,17 @@ class SuccessEffectSchema(BaseModel):
     type: SuccessEffectType
     durationMs: Optional[int] = None
 
+class BackgroundSchema(BaseModel):
+    type: str
+    url: Optional[str] = None
+    overlay: Optional[float] = None
+
 class ContentJsonSchema(BaseModel):
     # Overall design
     layout: Optional[str] = None
     font: Optional[str] = None
     logo: Optional[str] = None
-    background: Optional[str] = None
+    background: Optional[BackgroundSchema] = None
     effects: Optional[Dict[str, Any]] = None
     theme: Optional[ThemeSchema] = None
 

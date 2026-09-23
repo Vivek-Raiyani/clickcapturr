@@ -18,6 +18,7 @@ from sqlalchemy.future import select
 
 from app.models.page import Page
 from app.schemas.page import PageCreate, PageUpdate
+from app.services.campaign_service import campaign_service
 
 logger = logging.getLogger(__name__)
 
@@ -47,6 +48,9 @@ class PageService:
             The newly created and persisted Page instance.
         """
         logger.info("Creating page slug='%s' for user_id='%s'", page_in.slug, user_id)
+        
+        # Log the payload for debugging if needed (excluding large json if desired, but helpful for debugging)
+        logger.debug("Create payload: %s", page_in.model_dump())
 
         db_page = Page(
             **page_in.model_dump(),
@@ -200,11 +204,18 @@ class PageService:
             return None
 
         update_data = page_in.model_dump(exclude_unset=True)
+        logger.debug("Update payload for page id='%s': %s", page_id, update_data)
+        
         for key, value in update_data.items():
             setattr(db_page, key, value)
 
-        await db.commit()
-        await db.refresh(db_page)
+        try:
+            await db.commit()
+            await db.refresh(db_page)
+        except Exception as e:
+            logger.error("Database error while updating page id='%s': %s", page_id, str(e), exc_info=True)
+            await db.rollback()
+            raise
 
         logger.info("Page id='%s' updated successfully.", page_id)
         return db_page
@@ -246,6 +257,10 @@ class PageService:
 
         db_page.is_deleted = True
         db_page.deleted_at = datetime.datetime.now(datetime.timezone.utc)
+        
+        # Nullify page_id in associated campaigns since the page is now "deleted"
+        await campaign_service.nullify_page_id(db, page_id)
+        
         await db.commit()
 
         logger.info("Page id='%s' soft-deleted successfully.", page_id)

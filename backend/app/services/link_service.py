@@ -119,7 +119,6 @@ class LinkService:
             res = await db.execute(stmt)
             page = res.scalars().first()
             if page:
-                page.total_visits += 1
                 redirect_url = f"/public/{page.slug}"
                 if link.campaign_id:
                     redirect_url += f"?campaign_id={link.campaign_id}"

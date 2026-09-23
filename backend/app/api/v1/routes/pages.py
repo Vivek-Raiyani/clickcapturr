@@ -53,6 +53,12 @@ async def get_public_page(
     page = await page_service.get_page_by_slug(db, slug)
     if not page:
         raise HTTPException(status_code=404, detail="Page not found")
+        
+    # Increment total visits on view
+    page.total_visits += 1
+    await db.commit()
+    await db.refresh(page)
+    
     return DataResponse(data=page)
 
 @router.put("/{page_id}", response_model=DataResponse[PageResponse])

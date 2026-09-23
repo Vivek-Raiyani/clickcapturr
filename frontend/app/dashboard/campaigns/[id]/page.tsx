@@ -430,14 +430,29 @@ export default function CampaignDetails() {
 
           {/* Tracking Links Navigation */}
           <div className="bg-card border border-border rounded-xl shadow-sm flex flex-col h-[calc(100vh-180px)] min-h-[400px]">
-            <div className="p-4 border-b border-border flex items-center justify-between bg-muted/30">
-              <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-                <Link2 className="w-4 h-4" />
-                Tracking Links
-              </h3>
-              <span className="text-xs bg-background border border-border text-muted-foreground px-2 py-0.5 rounded-full font-medium">
-                {campaignData.links.length}
-              </span>
+            <div className="p-4 border-b border-border flex flex-col gap-3 bg-muted/30">
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <Link2 className="w-4 h-4" />
+                  Tracking Links
+                </h3>
+                <span className="text-xs bg-background border border-border text-muted-foreground px-2 py-0.5 rounded-full font-medium">
+                  {campaignData.links.length}
+                </span>
+              </div>
+              <button
+                onClick={() => {
+                  setNewLinkLabel("");
+                  setNewLinkPlatform("");
+                  setNewLinkPlatformId("");
+                  setCreateLinkError(null);
+                  setCreateLinkModalOpen(true);
+                }}
+                className="w-full flex items-center justify-center gap-2 text-sm font-medium bg-background border border-border hover:border-primary/50 text-foreground hover:text-primary py-2 rounded-lg transition-colors shadow-sm"
+              >
+                <Plus className="w-4 h-4" />
+                Add New Link
+              </button>
             </div>
 
             <div className="flex-1 overflow-y-auto p-2 space-y-1">
@@ -497,21 +512,6 @@ export default function CampaignDetails() {
               )}
             </div>
 
-            <div className="p-3 border-t border-border bg-muted/30">
-              <button
-                onClick={() => {
-                  setNewLinkLabel("");
-                  setNewLinkPlatform("");
-                  setNewLinkPlatformId("");
-                  setCreateLinkError(null);
-                  setCreateLinkModalOpen(true);
-                }}
-                className="w-full flex items-center justify-center gap-2 text-sm font-medium bg-background border border-border hover:border-primary/50 text-foreground hover:text-primary py-2 rounded-lg transition-colors shadow-sm"
-              >
-                <Plus className="w-4 h-4" />
-                Add New Link
-              </button>
-            </div>
           </div>
         </div>
 

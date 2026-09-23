@@ -89,6 +89,7 @@ export default function PageBuilderRoute() {
     <div className="fixed inset-0 z-50 bg-background">
       <PageBuilder
         mode="production"
+        pageId={pageId}
         initialState={initialState}
         backHref={`/dashboard/pages/${pageId}`}
         onSave={handleSave}

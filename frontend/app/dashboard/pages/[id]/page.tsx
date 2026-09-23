@@ -127,17 +127,17 @@ export default function PageDetails() {
   return (
     <div className="animate-in fade-in duration-500">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-row items-start justify-between gap-2 sm:gap-4 mb-8">
+        <div className="flex items-start gap-2 sm:gap-3 min-w-0">
           <button
             onClick={() => router.push("/dashboard/pages")}
-            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="p-1.5 sm:p-2 mt-0.5 sm:mt-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <div>
-            <h1 className="text-2xl font-serif font-bold text-foreground">{pageData.name}</h1>
-            <div className="flex items-center gap-2 mt-0.5">
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-foreground truncate">{pageData.name}</h1>
+            <div className="flex flex-wrap items-center gap-2 mt-0.5">
               <span className="text-xs text-muted-foreground font-mono bg-muted px-2 py-0.5 rounded border border-border">
                 /{pageData.slug}
               </span>
@@ -154,20 +154,21 @@ export default function PageDetails() {
         </div>
 
         {/* Right-side actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button
             onClick={handleDelete}
-            className="p-2 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 border border-border transition-colors"
+            className="p-1.5 sm:p-2 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 border border-border transition-colors shrink-0"
             title="Delete Page"
           >
             <Trash2 className="w-4 h-4" />
           </button>
           <Link
             href={`/dashboard/pages/${pageId}/builder`}
-            className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
+            className="bg-primary text-primary-foreground px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-1.5 sm:gap-2 shrink-0"
           >
-            <Pencil className="w-4 h-4" />
-            Edit in Builder
+            <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            <span className="hidden sm:inline">Edit in Builder</span>
+            <span className="sm:hidden">Edit</span>
           </Link>
         </div>
       </div>

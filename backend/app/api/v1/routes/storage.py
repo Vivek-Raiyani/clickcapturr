@@ -6,27 +6,33 @@ from app.utils.storage import storage
 
 router = APIRouter()
 
-@router.post("/upload-test", response_model=DataResponse[str])
-async def upload_test(
+@router.post("/upload", response_model=DataResponse[str])
+async def upload_file(
     file: UploadFile = File(...),
+    page_id: str = "",
     current_user: User = Depends(deps.get_current_user)
 ):
     """
-    Test endpoint for authenticated users to upload a file to the active storage provider.
+    Upload a deliverable file for a page.
+    Scoped to deliverables/{page_id}/ — clears the folder before uploading
+    so only one file ever exists per page.
     """
-    file_bytes = await file.read()
+    service = f"deliverables/{page_id}" if page_id else "deliverables/unsaved"
     
-    # Store it under the 'test' service directory
+    # Clear any previously uploaded file in this page's folder
+    storage.clear_folder(user_id=str(current_user.id), service=service)
+    
+    file_bytes = await file.read()
     file_url = storage.upload_file(
         user_id=str(current_user.id),
-        service="test",
+        service=service,
         filename=file.filename,
         file_bytes=file_bytes
     )
     
     return DataResponse(data=file_url)
 
-@router.get("/url-test/{filename}", response_model=DataResponse[str])
+@router.get("/url/{filename}", response_model=DataResponse[str])
 async def get_url_test(
     filename: str,
     current_user: User = Depends(deps.get_current_user)
@@ -41,17 +47,17 @@ async def get_url_test(
     )
     return DataResponse(data=file_url)
 
-@router.delete("/delete-test/{filename}", response_model=MessageResponse)
-async def delete_test(
+@router.delete("/delete/{filename}", response_model=MessageResponse)
+async def delete_file(
     filename: str,
     current_user: User = Depends(deps.get_current_user)
 ):
     """
-    Test endpoint to delete an uploaded file.
+    Delete an uploaded file.
     """
     success = storage.delete_file(
         user_id=str(current_user.id),
-        service="test",
+        service="deliverables",
         filename=filename
     )
     

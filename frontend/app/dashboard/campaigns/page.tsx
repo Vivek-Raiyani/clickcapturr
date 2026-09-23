@@ -174,7 +174,7 @@ export default function CampaignsList() {
                 </div>
                 <Link
                   href={`/dashboard/campaigns/${campaign.id}`}
-                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors opacity-0 group-hover:opacity-100 px-2 py-1 rounded hover:bg-muted"
+                  className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-muted"
                 >
                   View Details
                 </Link>

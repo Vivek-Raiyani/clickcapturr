@@ -21,6 +21,11 @@ class StorageProvider(ABC):
         """Returns the public URL to access the file."""
         pass
 
+    @abstractmethod
+    def clear_folder(self, user_id: int, service: str) -> int:
+        """Deletes all files in a service folder. Returns the count of deleted files."""
+        pass
+
 
 class LocalStorageProvider(StorageProvider):
     """Implementation for local file system storage."""
@@ -45,6 +50,18 @@ class LocalStorageProvider(StorageProvider):
             os.remove(file_path)
             return True
         return False
+
+    def clear_folder(self, user_id: int, service: str) -> int:
+        folder_path = os.path.join(self.base_dir, f"users/{user_id}/{service}")
+        if not os.path.exists(folder_path):
+            return 0
+        count = 0
+        for fname in os.listdir(folder_path):
+            fpath = os.path.join(folder_path, fname)
+            if os.path.isfile(fpath):
+                os.remove(fpath)
+                count += 1
+        return count
 
     def get_file_url(self, user_id: int, service: str, filename: str) -> str:
         # Returns an absolute URL based on the server host
@@ -84,6 +101,16 @@ class CloudStorageProvider(StorageProvider):
             Key=key
         )
         return True
+
+    def clear_folder(self, user_id: int, service: str) -> int:
+        prefix = f"users/{user_id}/{service}/"
+        response = self.s3_client.list_objects_v2(Bucket=self.bucket_name, Prefix=prefix)
+        objects = response.get("Contents", [])
+        if not objects:
+            return 0
+        delete_payload = {"Objects": [{"Key": obj["Key"]} for obj in objects]}
+        self.s3_client.delete_objects(Bucket=self.bucket_name, Delete=delete_payload)
+        return len(objects)
 
     def get_file_url(self, user_id: int, service: str, filename: str) -> str:
         key = f"users/{user_id}/{service}/{filename}"

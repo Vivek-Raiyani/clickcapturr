@@ -41,11 +41,13 @@ import type {
 import type { FormField } from "@/types";
 import { PageThemeEditor } from "./PageThemeEditor";
 import { FormFieldEditor } from "./FormFieldEditor";
+import { Toast } from "@/components/ui/Toast";
 import type { BuilderSection, PageBuilderState } from "./types";
 
 export interface PageInspectorPanelProps {
   activeSection: BuilderSection;
   state: PageBuilderState;
+  pageId?: string;
   onUpdateTheme: (updater: (prev: PageTheme) => PageTheme) => void;
   onUpdateContent: (updater: (prev: PageContent) => PageContent) => void;
   onUpdateFormFields: (fields: FormField[]) => void;
@@ -64,6 +66,7 @@ export function PageInspectorPanel({
   onUpdateTheme,
   onUpdateContent,
   onUpdateFormFields,
+  pageId,
 }: PageInspectorPanelProps) {
   const { content, theme, formFields } = state;
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -75,7 +78,10 @@ export function PageInspectorPanel({
       ? "text"
       : "file";
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploading, setIsUploading] = React.useState(false);
+  const [toastMessage, setToastMessage] = React.useState<{ message: string; type: "success" | "error" } | null>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -84,28 +90,53 @@ export function PageInspectorPanel({
         ? `${(file.size / (1024 * 1024)).toFixed(1)} MB`
         : `${Math.round(file.size / 1024)} KB`;
 
-    const blobUrl = URL.createObjectURL(file);
+    setIsUploading(true);
+    try {
+      const { uploadFile, deleteFile } = await import("@/lib/api/storage");
+      
+      // Delete existing file if one is already uploaded (fallback for client-side deduplication)
+      if (content.offer?.fileName && content.offer?.fileUrl && !pageId) {
+        try {
+          await deleteFile(content.offer.fileName);
+        } catch (delError) {
+          console.warn("Failed to delete previous file:", delError);
+        }
+      }
 
-    onUpdateContent((prev) => ({
-      ...prev,
-      offer: {
-        ...prev.offer,
-        type: "pdf",
-        deliveryMode: "upload",
-        fileName: file.name,
-        fileSize: formattedSize,
-        fileUrl: blobUrl,
-        assetId: null,
-      },
-      successAction: {
-        ...prev.successAction,
-        type: "download",
-        downloadFileName: file.name,
-        downloadUrl: blobUrl,
-      },
-      successTitle: prev.successTitle || "You're In!",
-      successSubtitle: prev.successSubtitle || "Your resources are ready for immediate download below.",
-    }));
+      // Pass pageId so backend clears the page folder before uploading
+      const publicUrl = await uploadFile(file, pageId);
+
+      onUpdateContent((prev) => ({
+        ...prev,
+        offer: {
+          ...prev.offer,
+          type: "pdf",
+          deliveryMode: "upload",
+          fileName: file.name,
+          fileSize: formattedSize,
+          fileUrl: publicUrl,
+          assetId: null,
+        },
+        successAction: {
+          ...prev.successAction,
+          type: "download",
+          downloadFileName: file.name,
+          downloadUrl: publicUrl,
+        },
+        successTitle: prev.successTitle || "You're In!",
+        successSubtitle: prev.successSubtitle || "Your resources are ready for immediate download below.",
+      }));
+      
+      // Show success toast/alert
+      setToastMessage({ message: "File uploaded successfully!", type: "success" });
+      
+    } catch (error: any) {
+      setToastMessage({ message: error.message || "Failed to upload file", type: "error" });
+    } finally {
+      setIsUploading(false);
+      // Reset input so the same file can be selected again if needed
+      if (e.target) e.target.value = '';
+    }
   };
 
   const handleSelectDeliverableType = (newCategory: "file" | "link" | "text") => {
@@ -749,18 +780,30 @@ export function PageInspectorPanel({
                   /* Upload Mode */
                   <div className="space-y-3">
                     <div
-                      onClick={() => fileInputRef.current?.click()}
-                      className="border-2 border-dashed border-border hover:border-primary/60 rounded-xl p-4 text-center cursor-pointer transition-all bg-card/60 hover:bg-card flex flex-col items-center justify-center gap-2 group"
+                      onClick={() => !isUploading && fileInputRef.current?.click()}
+                      className={`border-2 border-dashed border-border rounded-xl p-4 text-center transition-all flex flex-col items-center justify-center gap-2 group ${
+                        isUploading 
+                          ? "opacity-70 cursor-wait bg-card" 
+                          : "hover:border-primary/60 cursor-pointer bg-card/60 hover:bg-card"
+                      }`}
                     >
-                      <div className="p-2.5 rounded-full bg-primary/10 text-primary group-hover:scale-105 transition-transform">
-                        <UploadCloud className="w-5 h-5" />
-                      </div>
+                      {isUploading ? (
+                        <div className="p-2.5 rounded-full bg-primary/10 text-primary">
+                          <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                        </div>
+                      ) : (
+                        <div className="p-2.5 rounded-full bg-primary/10 text-primary group-hover:scale-105 transition-transform">
+                          <UploadCloud className="w-5 h-5" />
+                        </div>
+                      )}
                       <div className="space-y-0.5">
                         <div className="text-xs font-medium text-foreground">
-                          {content.offer?.fileName ? "Replace Uploaded File" : "Upload Deliverable File"}
+                          {isUploading 
+                            ? "Uploading..." 
+                            : (content.offer?.fileName ? "Replace Uploaded File" : "Upload Deliverable File")}
                         </div>
                         <div className="text-[10px] text-muted-foreground">
-                          Supports PDF, ZIP, MP4, EPUB, DOCX (Max 50MB)
+                          {isUploading ? "Please wait while we secure your file" : "Supports PDF, ZIP, MP4, EPUB, DOCX (Max 50MB)"}
                         </div>
                       </div>
                     </div>
@@ -1883,6 +1926,15 @@ export function PageInspectorPanel({
               </button>
             </div>
           </div>
+        </div>
+      )}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <Toast
+            message={toastMessage.message}
+            type={toastMessage.type}
+            onDismiss={() => setToastMessage(null)}
+          />
         </div>
       )}
     </aside>

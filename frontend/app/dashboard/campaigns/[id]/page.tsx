@@ -10,6 +10,7 @@ import {
   createCampaignLink,
   deleteCampaignLink,
   updateCampaignLink,
+  syncLinkStats,
   CampaignResponse,
   LinkResponse,
 } from "@/lib/api/campaigns";
@@ -125,6 +126,21 @@ export default function CampaignDetails() {
       alert(`Failed to save QR config: ${err.message}`);
     } finally {
       setIsQrSaving(false);
+    }
+  };
+
+  // Sync Stats
+  const [syncingStats, setSyncingStats] = useState(false);
+  const handleSyncStats = async (linkId: string) => {
+    try {
+      setSyncingStats(true);
+      await syncLinkStats(linkId);
+      await loadCampaign();
+    } catch (err: any) {
+      console.error("Failed to sync stats:", err);
+      alert(`Failed to sync stats: ${err.message}`);
+    } finally {
+      setSyncingStats(false);
     }
   };
 
@@ -357,38 +373,38 @@ export default function CampaignDetails() {
   return (
     <div className="animate-in fade-in duration-500 max-w-7xl mx-auto">
       {/* ── Page Header ── */}
-      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-5">
-        <div className="flex items-start gap-3">
+      <div className="flex flex-row items-start justify-between gap-2 sm:gap-4 mb-5">
+        <div className="flex items-start gap-2 sm:gap-3 min-w-0">
           <button
             onClick={() => router.push("/dashboard/campaigns")}
-            className="p-2 mt-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="p-1.5 sm:p-2 mt-0.5 sm:mt-1 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
-          <div>
-            <h1 className="text-2xl font-serif font-bold text-foreground flex items-center gap-2">
-              <Megaphone className="w-5 h-5 text-primary" />
-              {campaignData.title}
+          <div className="min-w-0">
+            <h1 className="text-xl sm:text-2xl font-serif font-bold text-foreground flex items-center gap-2">
+              <Megaphone className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
+              <span className="truncate">{campaignData.title}</span>
             </h1>
             {campaignData.description && (
-              <p className="text-muted-foreground text-sm mt-1 max-w-2xl">
+              <p className="text-muted-foreground text-xs sm:text-sm mt-1 max-w-2xl truncate">
                 {campaignData.description}
               </p>
             )}
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           <button
             onClick={openEditCampaignModal}
-            className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border border-border transition-colors flex items-center gap-2"
+            className="p-1.5 sm:p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border border-border transition-colors flex items-center gap-2"
           >
             <Edit className="w-4 h-4" />
             <span className="text-sm font-medium hidden sm:inline">Edit</span>
           </button>
           <button
             onClick={() => setShowDeleteConfirm(true)}
-            className="p-2 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 border border-border transition-colors flex items-center gap-2"
+            className="p-1.5 sm:p-2 rounded-lg text-muted-foreground hover:text-red-400 hover:bg-red-500/10 border border-border transition-colors flex items-center gap-2"
           >
             <Trash2 className="w-4 h-4" />
             <span className="text-sm font-medium hidden sm:inline">Delete</span>
@@ -429,7 +445,7 @@ export default function CampaignDetails() {
           </div>
 
           {/* Tracking Links Navigation */}
-          <div className="bg-card border border-border rounded-xl shadow-sm flex flex-col h-[calc(100vh-180px)] min-h-[400px]">
+          <div className="bg-card border border-border rounded-xl shadow-sm flex flex-col max-h-[250px] lg:max-h-none lg:h-[calc(100vh-180px)] lg:min-h-[400px]">
             <div className="p-4 border-b border-border flex flex-col gap-3 bg-muted/30">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
@@ -483,8 +499,8 @@ export default function CampaignDetails() {
                         )}
                       </div>
 
-                      {/* Action buttons (appear on hover/active) */}
-                      <div className={`flex items-center gap-1 ${isActive ? "opacity-100" : "opacity-0 group-hover:opacity-100"} transition-opacity`}>
+                      {/* Action buttons */}
+                      <div className="flex items-center gap-1 transition-opacity">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -649,9 +665,10 @@ export default function CampaignDetails() {
           {/* VIEW: SINGLE LINK */}
           {activeView.type === "link" && activeLinkData && (
             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-4">
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
+              <div className="flex flex-col gap-5 border-b border-border pb-5">
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
                     <Link2 className="w-4 h-4 text-primary" />
                     <h2 className="text-lg font-semibold text-foreground">
                       {activeLinkData.label || "Unlabeled Link"}
@@ -668,9 +685,9 @@ export default function CampaignDetails() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2 mt-3">
-                    <div className="bg-muted border border-border rounded-md px-3 py-1.5 flex items-center">
-                      <span className="text-sm font-mono text-muted-foreground truncate max-w-[200px] sm:max-w-md">
+                  <div className="flex items-center gap-1.5 sm:gap-2 mt-3 w-full max-w-full">
+                    <div className="bg-muted border border-border rounded-md px-2 sm:px-3 py-1.5 flex items-center flex-1 min-w-0">
+                      <span className="text-xs sm:text-sm font-mono text-muted-foreground truncate w-full">
                         {typeof window !== "undefined"
                           ? `${window.location.origin}/s/${activeLinkData.shortcode}`
                           : `/s/${activeLinkData.shortcode}`}
@@ -678,33 +695,71 @@ export default function CampaignDetails() {
                     </div>
                     <button
                       onClick={(e) => handleCopyLink(e, activeLinkData.shortcode, activeLinkData.id)}
-                      className="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-md transition-colors"
+                      className="p-1.5 sm:p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-md transition-colors shrink-0"
                       title="Copy Link"
                     >
-                      {copiedLinkId === activeLinkData.id ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      {copiedLinkId === activeLinkData.id ? <Check className="w-4 h-4 sm:w-4 sm:h-4" /> : <Copy className="w-4 h-4 sm:w-4 sm:h-4" />}
                     </button>
                     <button
                       onClick={() => setQrModalOpen(true)}
-                      className="bg-primary/10 text-primary border border-primary/20 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-primary/20 transition-colors flex items-center justify-center gap-2 ml-2"
+                      className="bg-primary/10 text-primary border border-primary/20 px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium hover:bg-primary/20 transition-colors flex items-center justify-center gap-1.5 shrink-0"
                       title="Customize QR Code"
                     >
-                      <QrCode className="w-4 h-4" />
-                      QR Code
+                      <QrCode className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <span className="hidden sm:inline">QR Code</span>
                     </button>
-                  </div>
-                </div>
-
-                <div className="flex gap-4 bg-card border border-border p-3 rounded-lg shadow-sm">
-                  <div className="flex flex-col items-center px-4 border-r border-border">
-                    <span className="text-2xl font-bold text-foreground leading-none">{activeLinkData.total_clicks}</span>
-                    <span className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider">Clicks</span>
-                  </div>
-                  <div className="flex flex-col items-center px-4">
-                    <span className="text-2xl font-bold text-foreground leading-none">{activeLinkData.total_scans}</span>
-                    <span className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider">Scans</span>
+                    {activeLinkData.platform === "youtube" && activeLinkData.platform_content_id && (
+                      <button
+                        onClick={() => handleSyncStats(activeLinkData.id)}
+                        disabled={syncingStats}
+                        className="bg-blue-500/10 text-blue-500 border border-blue-500/20 px-2 sm:px-3 py-1.5 rounded-md text-xs sm:text-sm font-medium hover:bg-blue-500/20 transition-colors flex items-center justify-center gap-1.5 shrink-0 disabled:opacity-50"
+                        title="Sync YouTube Stats"
+                      >
+                        <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                        <span className="hidden sm:inline">{syncingStats ? "Syncing..." : "Sync Stats"}</span>
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
+
+              <div className="flex bg-card border border-border p-3 rounded-lg shadow-sm w-fit max-w-full overflow-x-auto">
+                {activeLinkData.platform === "youtube" && (
+                  <div className="flex flex-col items-center px-5 border-r border-border min-w-[90px]">
+                    <span className="text-2xl font-bold text-foreground leading-none">{activeLinkData.platform_views || 0}</span>
+                    <span className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider whitespace-nowrap">Views</span>
+                  </div>
+                )}
+                <div className="flex flex-col items-center px-5 border-r border-border min-w-[90px]">
+                  <span className="text-2xl font-bold text-foreground leading-none">{activeLinkData.total_clicks}</span>
+                  <span className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider whitespace-nowrap">Clicks</span>
+                </div>
+                <div className="flex flex-col items-center px-5 border-r border-border min-w-[90px]">
+                  <span className="text-2xl font-bold text-foreground leading-none">{activeLinkData.total_scans}</span>
+                  <span className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider whitespace-nowrap">Scans</span>
+                </div>
+                <div className="flex flex-col items-center px-5 border-r border-border min-w-[90px]">
+                  <span className="text-2xl font-bold text-foreground leading-none">
+                    {submissions.filter(s => s.link_id === activeLinkData.id).length}
+                  </span>
+                  <span className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider whitespace-nowrap">Contacts</span>
+                </div>
+                <div className="flex flex-col items-center px-5 min-w-[90px]">
+                  <span className="text-2xl font-bold text-foreground leading-none">
+                    {(() => {
+                        const linkSubmissions = submissions.filter(s => s.link_id === activeLinkData.id).length;
+                        const interactions = activeLinkData.platform === "youtube" 
+                            ? (activeLinkData.platform_views || 0) 
+                            : (activeLinkData.total_clicks + activeLinkData.total_scans);
+                        return interactions ? ((linkSubmissions / interactions) * 100).toFixed(1) : 0;
+                    })()}%
+                  </span>
+                  <span className="text-xs text-muted-foreground mt-1 font-medium uppercase tracking-wider whitespace-nowrap" title={activeLinkData.platform === "youtube" ? "Contacts per View" : "Contacts per Click & Scan"}>
+                    {activeLinkData.platform === "youtube" ? "Lead/View" : "Lead/Click"}
+                  </span>
+                </div>
+              </div>
+            </div>
 
               <div className="mt-8 space-y-6">
                 <div className="flex items-center gap-2 mb-2 border-b border-border pb-4">

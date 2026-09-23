@@ -19,6 +19,8 @@ import { PageInspectorPanel } from "./PageInspectorPanel";
 export interface PageBuilderProps {
   /** Mode: 'production' for saved database pages, or 'demo' for interactive sandbox */
   mode?: "production" | "demo";
+  /** The page ID (used to scope file uploads to a folder) */
+  pageId?: string;
   /** Initial page builder state */
   initialState?: PageBuilderState;
   /** Back navigation URL */
@@ -39,6 +41,7 @@ export interface PageBuilderProps {
  */
 export function PageBuilder({
   mode = "production",
+  pageId,
   initialState = DEFAULT_PAGE_BUILDER_STATE,
   backHref = "/dashboard/pages",
   onSave,
@@ -113,6 +116,7 @@ export function PageBuilder({
         <PageInspectorPanel
           activeSection={activeSection}
           state={state}
+          pageId={pageId}
           onUpdateTheme={(updater) =>
             setState((prev) => ({ ...prev, theme: updater(prev.theme) }))
           }

@@ -110,7 +110,7 @@ export default function DashboardLayout({
       </header>
 
       {/* Main Content */}
-      <main className="p-8 max-w-5xl mx-auto">
+      <main className="p-8 max-w-7xl mx-auto">
         {children}
       </main>
 

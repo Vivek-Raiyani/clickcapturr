@@ -218,10 +218,10 @@ export default function PagesList() {
                   >
                     <ExternalLink className="w-4 h-4" />
                   </a>
-                  {/* Delete button — visible on hover */}
+                  {/* Delete button */}
                   <button
                     onClick={() => setDeleteTarget(page)}
-                    className="text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors p-1.5 rounded-lg opacity-0 group-hover:opacity-100"
+                    className="text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition-colors p-1.5 rounded-lg"
                     title="Delete page"
                   >
                     <Trash2 className="w-4 h-4" />

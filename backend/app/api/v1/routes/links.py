@@ -85,3 +85,25 @@ async def delete_link(
     if not success:
         raise HTTPException(status_code=404, detail="Link not found")
     return MessageResponse(message="Link deleted successfully")
+
+from app.services.youtube_service import youtube_service
+
+@router.post("/{link_id}/sync-stats", response_model=DataResponse[LinkResponse])
+async def sync_link_stats(
+    link_id: UUID,
+    db: AsyncSession = Depends(deps.get_db),
+    current_user: User = Depends(deps.get_current_active_user)
+):
+    link = await link_service.get_link_by_id(db, link_id, current_user.id)
+    if not link:
+        raise HTTPException(status_code=404, detail="Link not found")
+        
+    if link.platform == "youtube" and link.platform_content_id:
+        stats = await youtube_service.fetch_video_stats(link.platform_content_id)
+        if stats and "viewCount" in stats:
+            link.platform_views = stats["viewCount"]
+            await db.commit()
+            await db.refresh(link)
+    
+    return DataResponse(data=link)
+

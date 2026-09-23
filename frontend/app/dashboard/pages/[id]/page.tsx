@@ -22,7 +22,6 @@ export default function PageDetails() {
   const params = useParams();
   const pageId = params.id as string;
 
-  const [activeTab, setActiveTab] = useState<"overview" | "leads">("overview");
   const [pageData, setPageData] = useState<PageResponse | null>(null);
   const [copied, setCopied] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -35,7 +34,7 @@ export default function PageDetails() {
   const [isQrSaving, setIsQrSaving] = useState(false);
 
   useEffect(() => {
-    if (activeTab === "leads" && token && pageId && submissions.length === 0) {
+    if (token && pageId && submissions.length === 0) {
       setLoadingContacts(true);
       listSubmissionsAction(pageId, token).then(result => {
         if (result.success && result.data) {
@@ -44,7 +43,7 @@ export default function PageDetails() {
         setLoadingContacts(false);
       });
     }
-  }, [activeTab, token, pageId, submissions.length]);
+  }, [token, pageId, submissions.length]);
 
   const handleSaveQrConfig = async (config: QRConfig) => {
     if (!pageData?.link?.id) return;
@@ -173,35 +172,7 @@ export default function PageDetails() {
         </div>
       </div>
 
-      {/* Tab Bar */}
-      <div className="flex items-center gap-1 border-b border-border mb-6">
-        <button
-          onClick={() => setActiveTab("overview")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === "overview"
-              ? "border-primary text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Activity className="w-4 h-4" />
-          Overview
-        </button>
-        <button
-          onClick={() => setActiveTab("leads")}
-          className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
-            activeTab === "leads"
-              ? "border-primary text-foreground"
-              : "border-transparent text-muted-foreground hover:text-foreground"
-          }`}
-        >
-          <Users className="w-4 h-4" />
-          Contacts
-        </button>
-      </div>
-
-      {/* Tab: Overview */}
-      {activeTab === "overview" && (
-        <div className="space-y-6">
+      <div className="space-y-6">
           {/* Link Share Section */}
           {pageData.link && (
             <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -279,30 +250,16 @@ export default function PageDetails() {
             </div>
           </div>
 
-          <div className="bg-card border border-border rounded-xl p-8 text-center">
-            <Activity className="w-10 h-10 text-muted-foreground/40 mx-auto mb-4" />
-            <h3 className="font-medium mb-2">No activity yet</h3>
-            <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
-              Share your page link or QR code to start collecting views and contacts.
-            </p>
-            <Link
-              href={`/public/${pageData.slug}`}
-              target="_blank"
-              className="text-sm text-primary hover:underline flex items-center justify-center gap-1"
-            >
-              <span>Open public page</span>
-              <ExternalLink className="w-3 h-3" />
-            </Link>
-          </div>
-        </div>
-      )}
 
-      {/* Tab: Contacts */}
-      {activeTab === "leads" && (
-        <div className="space-y-6">
-          <ContactsTable submissions={submissions} loading={loadingContacts} />
         </div>
-      )}
+
+      <div className="mt-12 space-y-6">
+        <div className="flex items-center gap-2 mb-2 border-b border-border pb-4">
+          <Users className="w-5 h-5 text-muted-foreground" />
+          <h2 className="text-lg font-medium text-foreground">Contacts</h2>
+        </div>
+        <ContactsTable submissions={submissions} loading={loadingContacts} />
+      </div>
 
       {/* QR Code Modal */}
       <Modal 

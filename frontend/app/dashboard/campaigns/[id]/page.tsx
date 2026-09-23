@@ -57,7 +57,7 @@ export default function CampaignDetails() {
   const [loadingContacts, setLoadingContacts] = useState(false);
 
   useEffect(() => {
-    if (activeView.type === "leads" && token && campaignId && submissions.length === 0) {
+    if (token && campaignId && submissions.length === 0) {
       setLoadingContacts(true);
       listAllSubmissionsAction(token).then(result => {
         if (result.success && result.data) {
@@ -67,7 +67,7 @@ export default function CampaignDetails() {
         setLoadingContacts(false);
       });
     }
-  }, [activeView.type, token, campaignId, submissions.length]);
+  }, [token, campaignId, submissions.length]);
 
   // Copy shortcode
   const [copiedLinkId, setCopiedLinkId] = useState<string | null>(null);
@@ -620,23 +620,6 @@ export default function CampaignDetails() {
                 </div>
               </div>
 
-              <div className="bg-card border border-border rounded-xl p-8 text-center mt-6">
-                <Activity className="w-10 h-10 text-muted-foreground/40 mx-auto mb-4" />
-                <h3 className="font-medium mb-2">No activity yet</h3>
-                <p className="text-sm text-muted-foreground mb-4 max-w-sm mx-auto">
-                  Share your campaign tracking links or QR codes to start collecting views, clicks, and contacts.
-                </p>
-                {pageData && (
-                  <Link
-                    href={`/public/${pageData.slug}`}
-                    target="_blank"
-                    className="text-sm text-primary hover:underline flex items-center justify-center gap-1"
-                  >
-                    <span>Open connected page</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </Link>
-                )}
-              </div>
             </div>
           )}
 
@@ -707,13 +690,15 @@ export default function CampaignDetails() {
                 </div>
               </div>
 
-              {/* Analytics Placeholder */}
-              <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm p-8 flex flex-col items-center justify-center text-center min-h-[300px]">
-                <BarChart3 className="w-12 h-12 text-muted-foreground/30 mb-4" />
-                <h3 className="text-lg font-medium text-foreground mb-2">Detailed Analytics</h3>
-                <p className="text-sm text-muted-foreground max-w-sm">
-                  Detailed charts and conversion metrics for this specific link will appear here soon.
-                </p>
+              <div className="mt-8 space-y-6">
+                <div className="flex items-center gap-2 mb-2 border-b border-border pb-4">
+                  <Users className="w-5 h-5 text-muted-foreground" />
+                  <h2 className="text-lg font-medium text-foreground">Link Contacts</h2>
+                </div>
+                <ContactsTable 
+                  submissions={submissions.filter(s => s.link_id === activeLinkData.id)} 
+                  loading={loadingContacts} 
+                />
               </div>
 
             </div>

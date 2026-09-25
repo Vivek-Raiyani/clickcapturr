@@ -171,7 +171,7 @@ export function PageNavPanel({
               </div>
             </div>
 
-            <div>
+            {/* <div>
               <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold px-2 mb-1.5">
                 LEAD CAPTURE FORM
               </div>
@@ -185,7 +185,7 @@ export function PageNavPanel({
                   badge={state.content.formEnabled ? "Active" : "Disabled"}
                 />
               </div>
-            </div>
+            </div> */}
 
             <div>
               <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold px-2 mb-1.5">
@@ -230,7 +230,7 @@ export function PageNavPanel({
               </div>
             </div>
 
-            <div>
+            {/* <div>
               <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground font-semibold px-2 mb-1.5">
                 MONETIZE
               </div>
@@ -244,7 +244,7 @@ export function PageNavPanel({
                   badge={state.content.sponsorsEnabled ? "Active" : undefined}
                 />
               </div>
-            </div>
+            </div> */}
           </>
         )}
 

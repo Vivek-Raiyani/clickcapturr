@@ -55,7 +55,7 @@ export async function updatePageAction(
         ...(patch.title       !== undefined && { name:         patch.title }),
         ...(patch.slug        !== undefined && { slug:         patch.slug }),
         ...(patch.description !== undefined && { description:  patch.description }),
-        ...(patch.themeJson   !== undefined && { content_json: patch.themeJson }),
+        ...(patch.themeJson   !== undefined && { theme_json:   patch.themeJson }),
         ...(patch.contentJson !== undefined && { content_json: patch.contentJson }),
         // isActive isn't a backend field yet — skip gracefully
       };

@@ -463,53 +463,7 @@ export function PageInspectorPanel({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-[10.5px] text-muted-foreground mb-1">
-                  Size
-                </label>
-                <select
-                  value={content.headlineSize || "lg"}
-                  onChange={(e) =>
-                    onUpdateContent((prev) => ({
-                      ...prev,
-                      headlineSize: e.target.value as PageContent["headlineSize"],
-                    }))
-                  }
-                  className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
-                >
-                  <option value="sm">Small</option>
-                  <option value="md">Medium</option>
-                  <option value="lg">Large</option>
-                  <option value="xl">Extra Large</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[10.5px] text-muted-foreground mb-1">
-                  Alignment
-                </label>
-                <div className="flex bg-card border border-border rounded-lg p-0.5">
-                  {(["left", "center", "right"] as const).map((align) => (
-                    <button
-                      key={align}
-                      type="button"
-                      onClick={() =>
-                        onUpdateContent((prev) => ({ ...prev, headlineAlign: align }))
-                      }
-                      className={`flex-1 py-1 flex items-center justify-center rounded text-xs cursor-pointer ${
-                        content.headlineAlign === align
-                          ? "bg-muted text-primary shadow-xs"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      {align === "left" && <AlignLeft className="w-3.5 h-3.5" />}
-                      {align === "center" && <AlignCenter className="w-3.5 h-3.5" />}
-                      {align === "right" && <AlignRight className="w-3.5 h-3.5" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            <div>
             </div>
           </div>
         )}
@@ -531,23 +485,7 @@ export function PageInspectorPanel({
               />
             </div>
 
-            <div>
-              <label className="block text-[10.5px] text-muted-foreground mb-1">Size</label>
-              <select
-                value={content.descriptionSize || "md"}
-                onChange={(e) =>
-                  onUpdateContent((prev) => ({
-                    ...prev,
-                    descriptionSize: e.target.value as PageContent["descriptionSize"],
-                  }))
-                }
-                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
-              >
-                <option value="sm">Compact</option>
-                <option value="md">Default</option>
-                <option value="lg">Prominent</option>
-              </select>
-            </div>
+
           </div>
         )}
 
@@ -623,31 +561,7 @@ export function PageInspectorPanel({
               />
             </div>
 
-            <div>
-              <label className="block text-[10.5px] text-muted-foreground mb-1">
-                Aspect Ratio
-              </label>
-              <select
-                value={content.hero?.aspect || "16:9"}
-                onChange={(e) =>
-                  onUpdateContent((prev) => ({
-                    ...prev,
-                    hero: prev.hero
-                      ? {
-                          ...prev.hero,
-                          aspect: e.target.value as "16:9" | "4:3" | "1:1" | "portrait",
-                        }
-                      : null,
-                  }))
-                }
-                className="w-full bg-card border border-border rounded-lg px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
-              >
-                <option value="16:9">16:9 Widescreen</option>
-                <option value="4:3">4:3 Standard</option>
-                <option value="1:1">1:1 Square</option>
-                <option value="portrait">9:16 Portrait / Story</option>
-              </select>
-            </div>
+
           </div>
         )}
 
@@ -1128,6 +1042,13 @@ export function PageInspectorPanel({
                     onChange={(e) => updateTestimonial(t.id, "quote", e.target.value)}
                     placeholder="Quote content"
                     className="w-full bg-muted border border-border rounded px-2.5 py-1.5 text-xs text-foreground resize-none focus:outline-none focus:border-primary"
+                  />
+                  <input
+                    type="url"
+                    value={t.photoUrl || ""}
+                    onChange={(e) => updateTestimonial(t.id, "photoUrl", e.target.value)}
+                    placeholder="Photo URL (Optional)"
+                    className="w-full bg-muted border border-border rounded px-2.5 py-1.5 text-xs text-foreground focus:outline-none focus:border-primary"
                   />
                 </div>
               ))}

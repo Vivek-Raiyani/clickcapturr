@@ -174,96 +174,96 @@ export default function PageDetails() {
       </div>
 
       <div className="space-y-6">
-          {/* Link Share Section */}
-          {pageData.link && (
-            <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div>
-                <h3 className="text-sm font-medium text-foreground mb-1">Share your page</h3>
-                <p className="text-xs text-muted-foreground">Use this short link to drive traffic and track views.</p>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-2">
-                <div className="flex items-center bg-muted border border-border rounded-lg overflow-hidden">
-                  <span className="px-3 py-2 text-sm font-mono text-muted-foreground border-r border-border bg-background truncate max-w-[200px] sm:max-w-none">
-                    {typeof window !== 'undefined' ? `${window.location.origin}/s/${pageData.link.shortcode}` : `/s/${pageData.link.shortcode}`}
-                  </span>
-                  <button 
-                    onClick={handleCopyLink}
-                    className="p-2 hover:bg-background transition-colors text-foreground flex items-center justify-center w-10"
-                    title="Copy Link"
-                  >
-                    {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
-                  </button>
-                </div>
+        {/* Link Share Section */}
+        {pageData.link && (
+          <div className="bg-card border border-border rounded-xl p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 className="text-sm font-medium text-foreground mb-1">Share your page</h3>
+              <p className="text-xs text-muted-foreground">Use this short link to drive traffic and track views.</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="flex items-center bg-muted border border-border rounded-lg overflow-hidden">
+                <span className="px-3 py-2 text-sm font-mono text-muted-foreground border-r border-border bg-background truncate max-w-[200px] sm:max-w-none">
+                  {typeof window !== 'undefined' ? `${window.location.origin}/s/${pageData.link.shortcode}` : `/s/${pageData.link.shortcode}`}
+                </span>
                 <button
-                  onClick={() => setQrModalOpen(true)}
-                  className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors flex items-center justify-center gap-2"
+                  onClick={handleCopyLink}
+                  className="p-2 hover:bg-background transition-colors text-foreground flex items-center justify-center w-10"
+                  title="Copy Link"
                 >
-                  <QrCode className="w-4 h-4" />
-                  QR Code
+                  {copied ? <Check className="w-4 h-4 text-green-500" /> : <Copy className="w-4 h-4" />}
                 </button>
               </div>
-            </div>
-          )}
-
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
-              <div>
-                <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
-                  <Activity className="w-3.5 h-3.5" />
-                  Total Views
-                </h3>
-                <p className="text-3xl font-bold">{pageData.total_visits || 0}</p>
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-3">Direct page visits</p>
-            </div>
-            
-            <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
-              <div>
-                <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
-                  <ExternalLink className="w-3.5 h-3.5" />
-                  Total Clicks
-                </h3>
-                <p className="text-3xl font-bold">{pageData.link?.total_clicks || 0}</p>
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-3">From short link</p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
-              <div>
-                <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
-                  <QrCode className="w-3.5 h-3.5" />
-                  QR Scans
-                </h3>
-                <p className="text-3xl font-bold">{pageData.link?.total_scans || 0}</p>
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-3">From QR code scans</p>
-            </div>
-            
-            <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
-              <div>
-                <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
-                  <Users className="w-3.5 h-3.5" />
-                  Contacts Captured
-                </h3>
-                <p className="text-3xl font-bold">{pageData.total_lead_captures || 0}</p>
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-3">From form submissions</p>
-            </div>
-
-            <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
-              <div>
-                <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
-                  <TrendingUp className="w-3.5 h-3.5" />
-                  Conversion Rate
-                </h3>
-                <p className="text-3xl font-bold">{pageData.total_visits ? ((pageData.total_lead_captures || 0) / pageData.total_visits * 100).toFixed(1) : 0}%</p>
-              </div>
-              <p className="text-[10px] text-muted-foreground mt-3">Contacts per view</p>
+              <button
+                onClick={() => setQrModalOpen(true)}
+                className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors flex items-center justify-center gap-2"
+              >
+                <QrCode className="w-4 h-4" />
+                QR Code
+              </button>
             </div>
           </div>
+        )}
 
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                <Activity className="w-3.5 h-3.5" />
+                Total Views
+              </h3>
+              <p className="text-3xl font-bold">{pageData.total_visits || 0}</p>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-3">Direct page visits</p>
+          </div>
 
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                <ExternalLink className="w-3.5 h-3.5" />
+                Total Clicks
+              </h3>
+              <p className="text-3xl font-bold">{pageData.link?.total_clicks || 0}</p>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-3">From short link</p>
+          </div>
+
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                <QrCode className="w-3.5 h-3.5" />
+                QR Scans
+              </h3>
+              <p className="text-3xl font-bold">{pageData.link?.total_scans || 0}</p>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-3">From QR code scans</p>
+          </div>
+
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                <Users className="w-3.5 h-3.5" />
+                Contacts Captured
+              </h3>
+              <p className="text-3xl font-bold">{pageData.total_lead_captures || 0}</p>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-3">From form submissions</p>
+          </div>
+
+          <div className="bg-card border border-border rounded-xl p-5 shadow-sm flex flex-col justify-between">
+            <div>
+              <h3 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1.5">
+                <TrendingUp className="w-3.5 h-3.5" />
+                Conversion Rate
+              </h3>
+              <p className="text-3xl font-bold">{pageData.total_visits ? ((pageData.total_lead_captures || 0) / pageData.total_visits * 100).toFixed(1) : 0}%</p>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-3">Contacts per view</p>
+          </div>
         </div>
+
+
+      </div>
 
       <div className="mt-12 space-y-6">
         <div className="flex items-center gap-2 mb-2 border-b border-border pb-4">
@@ -274,10 +274,10 @@ export default function PageDetails() {
       </div>
 
       {/* QR Code Modal */}
-      <Modal 
-        open={qrModalOpen} 
-        onClose={() => setQrModalOpen(false)} 
-        title="Configure QR Code" 
+      <Modal
+        open={qrModalOpen}
+        onClose={() => setQrModalOpen(false)}
+        title="Configure QR Code"
         maxWidth="4xl"
       >
         {pageData?.link && (

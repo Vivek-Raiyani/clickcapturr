@@ -1,7 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import confetti from "canvas-confetti";
 import {
   Sparkles,
   Loader2,
@@ -78,6 +79,52 @@ export function PagePreview({
   const [formSubmitted, setFormSubmitted] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
   const isViewingSuccess = showSuccessPreview || formSubmitted;
+
+  useEffect(() => {
+    if (isViewingSuccess && content.successEffect?.type && content.successEffect.type !== "none") {
+      const type = content.successEffect.type;
+      const colors = [theme.primaryColor, theme.accentColor || "#ffffff", "#ffffff"];
+      
+      if (type === "confetti") {
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors,
+          zIndex: 9999,
+        });
+      } else if (type === "fireworks") {
+        const duration = 2500;
+        const animationEnd = Date.now() + duration;
+        const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 9999 };
+        const randomInRange = (min: number, max: number) => Math.random() * (max - min) + min;
+
+        const interval: any = setInterval(function() {
+          const timeLeft = animationEnd - Date.now();
+          if (timeLeft <= 0) return clearInterval(interval);
+          const particleCount = 50 * (timeLeft / duration);
+          confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 },
+            colors
+          }));
+          confetti(Object.assign({}, defaults, {
+            particleCount,
+            origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 },
+            colors
+          }));
+        }, 250);
+      } else if (type === "sparkles") {
+        confetti({
+          particleCount: 100,
+          spread: 120,
+          origin: { y: 0.5 },
+          colors: ["#FFD700", "#FFA500", "#FFFFFF"],
+          zIndex: 9999,
+        });
+      }
+    }
+  }, [isViewingSuccess, content.successEffect?.type, theme.primaryColor, theme.accentColor]);
 
   // Active template definition containing DB/preset styleConfig and customCss
   const activeTemplate = TEMPLATE_STYLES.find((t) => t.id === theme.template);
@@ -663,21 +710,6 @@ export function PagePreview({
                     </div>
                   </div>
 
-                  {/* 5. Return to Lead Capture View */}
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setFormSubmitted(false);
-                        if (showSuccessPreview) {
-                          onUpdateState((prev) => ({ ...prev, showSuccessPreview: false }));
-                        }
-                      }}
-                      className="text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer py-2 px-4 rounded-lg hover:bg-white/5 inline-flex items-center gap-1.5"
-                    >
-                      <span>← Return to Lead Capture View</span>
-                    </button>
-                  </div>
                 </div>
               </div>
             ) : (

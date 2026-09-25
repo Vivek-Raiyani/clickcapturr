@@ -5,6 +5,7 @@ import type { Page, FormField } from "@/types";
 import { PagePreview } from "./PagePreview";
 import { submitFormAction, type LocationInfo, type SubmitFormPayload } from "@/actions/form.actions";
 import { DEFAULT_PAGE_BUILDER_STATE, type PageBuilderState, type DeviceMode } from "./types";
+import { mapPayloadToState, type PageResponse } from "@/lib/api/pages";
 
 export interface PublicPageViewerProps {
   page: Page;
@@ -72,13 +73,19 @@ export function PublicPageViewer({ page, formFields = [] }: PublicPageViewerProp
     });
   }, []);
 
-  const [state, setState] = useState<PageBuilderState>({
-    ...DEFAULT_PAGE_BUILDER_STATE,
-    title: page.title,
-    slug: page.slug,
-    formFields: finalFormFields,
-    ...(page.themeJson ? { theme: page.themeJson } : {}),
-    ...(page.contentJson ? { content: page.contentJson } : {}),
+  const [state, setState] = useState<PageBuilderState>(() => {
+    if (page.content_json) {
+      const mapped = mapPayloadToState(page as unknown as PageResponse, DEFAULT_PAGE_BUILDER_STATE);
+      return { ...mapped, formFields: finalFormFields };
+    }
+    return {
+      ...DEFAULT_PAGE_BUILDER_STATE,
+      title: page.title || page.name,
+      slug: page.slug,
+      formFields: finalFormFields,
+      ...(page.themeJson ? { theme: page.themeJson as any } : {}),
+      ...(page.contentJson ? { content: page.contentJson as any } : {}),
+    };
   });
 
   const handleSubmit = async (data: Record<string, unknown>) => {

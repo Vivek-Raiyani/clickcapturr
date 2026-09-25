@@ -207,62 +207,7 @@ export function PageThemeEditor({
             })}
           </div>
 
-          {/* Custom Accents */}
-          <div className="pt-3 border-t border-border space-y-3">
-            <span className="text-[11px] font-mono text-muted-foreground uppercase block font-semibold">
-              Custom Colors
-            </span>
 
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="block text-[10.5px] text-muted-foreground mb-1">
-                  Primary Brand
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="color"
-                    value={theme.primaryColor}
-                    onChange={(e) =>
-                      onChange((prev) => ({ ...prev, primaryColor: e.target.value }))
-                    }
-                    className="w-7 h-7 rounded border-none cursor-pointer bg-transparent"
-                  />
-                  <input
-                    type="text"
-                    value={theme.primaryColor}
-                    onChange={(e) =>
-                      onChange((prev) => ({ ...prev, primaryColor: e.target.value }))
-                    }
-                    className="w-full bg-muted border border-border rounded px-2 py-1 text-xs text-foreground font-mono focus:outline-none focus:border-primary"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-[10.5px] text-muted-foreground mb-1">
-                  Button Accent
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="color"
-                    value={theme.accentColor}
-                    onChange={(e) =>
-                      onChange((prev) => ({ ...prev, accentColor: e.target.value }))
-                    }
-                    className="w-7 h-7 rounded border-none cursor-pointer bg-transparent"
-                  />
-                  <input
-                    type="text"
-                    value={theme.accentColor}
-                    onChange={(e) =>
-                      onChange((prev) => ({ ...prev, accentColor: e.target.value }))
-                    }
-                    className="w-full bg-muted border border-border rounded px-2 py-1 text-xs text-foreground font-mono focus:outline-none focus:border-primary"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 
@@ -279,113 +224,12 @@ export function PageThemeEditor({
             </span>
           </div>
 
-          {/* Curated Typography Pairings */}
-          <div className="space-y-2">
-            <label className="block text-xs font-semibold text-foreground">
-              Curated Font Pairings
+          {/* Global Font Selector */}
+          <div className="space-y-2 pt-2">
+            <label className="block text-xs font-semibold text-foreground mb-2">
+              Font Family
             </label>
-            <div className="grid grid-cols-1 gap-1.5">
-              {[
-                {
-                  id: "editorial",
-                  name: "Editorial Luxury",
-                  headline: "Playfair Display",
-                  body: "Inter Sans",
-                  badge: "Classic",
-                  sample: "The High-Leverage Playbook",
-                },
-                {
-                  id: "modern",
-                  name: "Clean Modernist",
-                  headline: "Outfit Clean",
-                  body: "Inter Sans",
-                  badge: "SaaS",
-                  sample: "Streamlined Architecture & Logic",
-                },
-                {
-                  id: "literary",
-                  name: "Classical Literature",
-                  headline: "Cormorant Garamond",
-                  body: "Cormorant Garamond",
-                  badge: "Scholarly",
-                  sample: "Antiquarian Wisdom & Heritage",
-                },
-                {
-                  id: "universal",
-                  name: "Universal Sans",
-                  headline: "Inter Sans",
-                  body: "Inter Sans",
-                  badge: "Balanced",
-                  sample: "Maximum Conversion Clarity",
-                },
-                {
-                  id: "terminal",
-                  name: "Tactical Terminal",
-                  headline: "JetBrains Mono",
-                  body: "JetBrains Mono",
-                  badge: "Cyber",
-                  sample: "SYSTEM_NOMINAL // RUN_CODE",
-                },
-              ].map((pairing) => {
-                const isPairingActive =
-                  theme.fonts.headlineFont === pairing.headline &&
-                  theme.fonts.formFont === pairing.body;
-                return (
-                  <button
-                    key={pairing.id}
-                    type="button"
-                    onClick={() =>
-                      onChange((prev) => ({
-                        ...prev,
-                        fonts: {
-                          ...prev.fonts,
-                          headlineFont: pairing.headline,
-                          formFont: pairing.body,
-                          subtitleFont: pairing.body,
-                          buttonFont: pairing.body,
-                        },
-                      }))
-                    }
-                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
-                      isPairingActive
-                        ? "bg-primary/15 border-primary text-foreground shadow-xs ring-1 ring-primary/40"
-                        : "bg-card border-border text-muted-foreground hover:border-border hover:text-foreground hover:bg-muted/80"
-                    }`}
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-foreground">
-                          {pairing.name}
-                        </span>
-                        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-primary/10 text-primary border border-primary/20">
-                          {pairing.badge}
-                        </span>
-                      </div>
-                      <div className="text-[10.5px] text-muted-foreground truncate mt-0.5">
-                        {pairing.headline} + {pairing.body}
-                      </div>
-                    </div>
-                    {isPairingActive && (
-                      <Check className="w-3.5 h-3.5 text-primary shrink-0 ml-2" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Headline Font Selector with Real Specimen Cards */}
-          <div className="space-y-2.5 pt-2 border-t border-border">
-            <div className="flex items-center justify-between">
-              <label className="block text-xs font-semibold text-foreground">
-                Headline Font
-              </label>
-              <span className="text-[10px] font-mono text-primary font-semibold">
-                {theme.fonts.headlineFont}
-              </span>
-            </div>
-
-            <div className="space-y-2">
+            <div className="grid grid-cols-1 gap-2">
               {FONT_OPTIONS.map((font) => {
                 const isSelected = theme.fonts.headlineFont === font.name;
                 return (
@@ -395,7 +239,13 @@ export function PageThemeEditor({
                     onClick={() =>
                       onChange((prev) => ({
                         ...prev,
-                        fonts: { ...prev.fonts, headlineFont: font.name },
+                        fonts: {
+                          ...prev.fonts,
+                          headlineFont: font.name,
+                          subtitleFont: font.name,
+                          formFont: font.name,
+                          buttonFont: font.name,
+                        },
                       }))
                     }
                     className={`w-full p-3 rounded-xl border text-left transition-all cursor-pointer ${
@@ -432,102 +282,6 @@ export function PageThemeEditor({
                     >
                       Aa Bb Gg 123
                     </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Headline Weight Controls */}
-          <div className="space-y-1.5 pt-2 border-t border-border">
-            <label className="block text-xs font-semibold text-foreground">
-              Headline Weight
-            </label>
-            <div className="grid grid-cols-4 gap-1.5">
-              {[
-                { label: "Regular", val: "400" },
-                { label: "Medium", val: "500" },
-                { label: "Bold", val: "700" },
-                { label: "Black", val: "900" },
-              ].map((wt) => {
-                const isSelected = (theme.fonts.headlineWeight || "700") === wt.val;
-                return (
-                  <button
-                    key={wt.val}
-                    type="button"
-                    onClick={() =>
-                      onChange((prev) => ({
-                        ...prev,
-                        fonts: { ...prev.fonts, headlineWeight: wt.val },
-                      }))
-                    }
-                    className={`py-1.5 px-2 rounded-lg text-xs font-medium text-center transition-all cursor-pointer border ${
-                      isSelected
-                        ? "bg-primary text-primary-foreground border-primary font-bold shadow-xs"
-                        : "bg-card border-border text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    {wt.label}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Body & Form Font */}
-          <div className="space-y-2 pt-2 border-t border-border">
-            <div className="flex items-center justify-between">
-              <label className="block text-xs font-semibold text-foreground">
-                Body & Form Font
-              </label>
-              <span className="text-[10px] font-mono text-primary font-semibold">
-                {theme.fonts.formFont}
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-1.5">
-              {FONT_OPTIONS.map((font) => {
-                const isSelected = theme.fonts.formFont === font.name;
-                return (
-                  <button
-                    key={font.id}
-                    type="button"
-                    onClick={() =>
-                      onChange((prev) => ({
-                        ...prev,
-                        fonts: {
-                          ...prev.fonts,
-                          formFont: font.name,
-                          subtitleFont: font.name,
-                          buttonFont: font.name,
-                        },
-                      }))
-                    }
-                    className={`p-2.5 rounded-xl border text-left transition-all cursor-pointer flex items-center justify-between ${
-                      isSelected
-                        ? "bg-primary/15 border-primary text-foreground shadow-xs ring-1 ring-primary/40"
-                        : "bg-card border-border text-muted-foreground hover:border-border hover:text-foreground hover:bg-muted/80"
-                    }`}
-                  >
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold text-foreground">
-                          {font.name}
-                        </span>
-                        <span className="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded bg-muted text-muted-foreground border border-border">
-                          {font.category}
-                        </span>
-                      </div>
-                      <div
-                        className="text-[11px] text-muted-foreground truncate mt-1"
-                        style={{ fontFamily: font.fontFamily }}
-                      >
-                        Designed for high readability and optimal conversion flow.
-                      </div>
-                    </div>
-                    {isSelected && (
-                      <Check className="w-3.5 h-3.5 text-primary shrink-0 ml-2" />
-                    )}
                   </button>
                 );
               })}

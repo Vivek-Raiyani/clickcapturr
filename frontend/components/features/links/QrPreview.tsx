@@ -132,7 +132,7 @@ export const QrPreview: React.FC<QrPreviewProps> = ({
     <div className="flex flex-col gap-6 md:flex-row">
       <div className="flex flex-col items-center justify-center p-6 border rounded-xl bg-muted/20 w-full md:w-1/2">
         <div ref={ref} className="bg-white p-4 rounded-xl shadow-sm mb-4" />
-        <Button variant="outline" onClick={onDownloadClick} className="w-full max-w-[300px]">
+        <Button variant="secondary" onClick={onDownloadClick} className="w-full max-w-[300px]">
           <Download className="w-4 h-4 mr-2" /> Download QR
         </Button>
       </div>

@@ -27,7 +27,10 @@ export type TemplateStyle =
   | "riso"
   | "skeuomorphic"
   | "memphis"
-  | "card";
+  | "card"
+  | "immersive"
+  | "letter"
+  | "overlay";
 
 // ---------------------------------------------------------------------------
 // Fonts
@@ -130,7 +133,7 @@ export interface FormSuccessAction {
 }
 
 export interface FormSuccessEffect {
-  type:        "confetti" | "fireworks" | "none";
+  type:        "confetti" | "fireworks" | "sparkles" | "none";
   durationMs?: number;
 }
 
@@ -181,13 +184,14 @@ export interface PageContent {
   offer?:                   OfferConfig;
   additionalContentEnabled?: boolean;
   testimonials?:            TestimonialItem[];
+  sponsorsEnabled?:         boolean;
   sponsors?:                SponsorItem[];
   contentBlocks?:           ContentBlockItem[];
   formEnabled?:             boolean;
 
   // Success state
   successAction?:     FormSuccessAction;
-  successEffect?:     FormSuccessEffect;
+  successEffect?:     FormSuccessEffect | null;
   successTitle?:      string;
   successSubtitle?:   string;
   successButtonText?: string;

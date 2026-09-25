@@ -1120,7 +1120,7 @@ export function PageInspectorPanel({
                       ...prev,
                       successAction: {
                         ...prev.successAction,
-                        type: val as PageContent["successAction"]["type"],
+                        type: val as any,
                         autoDownload: false,
                       },
                       offer: {
@@ -1153,14 +1153,14 @@ export function PageInspectorPanel({
               </select>
             </div>
 
-            {content.successAction.type === "redirect" && (
+            {content.successAction?.type === "redirect" && (
               <div>
                 <label className="block text-xs text-foreground mb-1">
                   Redirect URL
                 </label>
                 <input
                   type="url"
-                  value={content.successAction.redirectUrl || content.offer?.linkUrl || ""}
+                  value={content.successAction?.redirectUrl || content.offer?.linkUrl || ""}
                   onChange={(e) =>
                     onUpdateContent((prev) => ({
                       ...prev,
@@ -1174,7 +1174,7 @@ export function PageInspectorPanel({
               </div>
             )}
 
-            {content.successAction.type === "reveal_code" && (
+            {content.successAction?.type === "reveal_code" && (
               <div className="space-y-2">
                 <div>
                   <label className="block text-xs text-foreground mb-1">
@@ -1182,7 +1182,7 @@ export function PageInspectorPanel({
                   </label>
                   <input
                     type="text"
-                    value={content.successAction.code || content.offer?.textContent || ""}
+                    value={content.successAction?.code || content.offer?.textContent || ""}
                     onChange={(e) =>
                       onUpdateContent((prev) => ({
                         ...prev,

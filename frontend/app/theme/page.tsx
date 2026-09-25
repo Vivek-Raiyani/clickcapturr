@@ -7,6 +7,7 @@ import {
   DataTable, 
   StatCard, 
   Accordion, 
+  AccordionItem,
   SegmentedControl,
   Modal,
   ConfirmDialog,
@@ -198,9 +199,9 @@ export default function ThemePreviewPage() {
               <div className="col-span-1 md:col-span-2 p-8 rounded-2xl bg-card border border-border shadow-sm flex flex-col gap-6">
                 <h3 className="text-xl font-medium border-b border-border pb-2">Stat Cards</h3>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <StatCard title="Total Revenue" value="$45,231.89" change={20.1} />
-                  <StatCard title="Active Users" value="+2,350" change={-4.5} />
-                  <StatCard title="New Signups" value="894" change={12.4} />
+                  <StatCard label="Total Revenue" value="$45,231.89" />
+                  <StatCard label="Active Users" value="+2,350" />
+                  <StatCard label="New Signups" value="894" />
                 </div>
               </div>
 
@@ -211,12 +212,10 @@ export default function ThemePreviewPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                   <div className="flex flex-col gap-4">
                     <h4 className="font-medium text-muted-foreground">Accordion</h4>
-                    <Accordion 
-                      items={[
-                        { id: "1", title: "Is this accessible?", content: "Yes. It adheres to the WAI-ARIA design pattern." },
-                        { id: "2", title: "Is it styled?", content: "Yes. It comes with default styles that matches the other components." }
-                      ]}
-                    />
+                    <Accordion>
+                      <AccordionItem title="Is this accessible?">Yes. It adheres to the WAI-ARIA design pattern.</AccordionItem>
+                      <AccordionItem title="Is it styled?">Yes. It comes with default styles that matches the other components.</AccordionItem>
+                    </Accordion>
                   </div>
                   
                   <div className="flex flex-col gap-4">

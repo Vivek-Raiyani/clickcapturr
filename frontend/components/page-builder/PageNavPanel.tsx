@@ -278,7 +278,7 @@ export function PageNavPanel({
               <NavButton
                 icon={<Type className="w-4 h-4" />}
                 title="Typography"
-                subtitle={state.theme.fonts.headlineFont}
+                subtitle={state.theme.fonts?.headlineFont || "System"}
                 active={activeSection === "fonts"}
                 onClick={() => onSectionChange("fonts")}
               />

@@ -7,10 +7,10 @@ import { fetchApi } from "@/lib/api";
 import { StatCard } from "@/components/ui/StatCard";
 
 interface DashboardStats {
-  total_page_views: int;
-  total_contacts: int;
-  active_campaigns: int;
-  conversion_rate: float;
+  total_page_views: number;
+  total_contacts: number;
+  active_campaigns: number;
+  conversion_rate: number;
   recent_campaigns: any[];
   recent_pages: any[];
   recent_contacts: any[];

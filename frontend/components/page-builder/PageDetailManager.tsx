@@ -28,16 +28,14 @@ import { Button } from "@/components/ui/Button";
 import { Modal } from "@/components/ui/Modal";
 import { StatCard } from "@/components/ui/StatCard";
 import { QrPreview } from "@/components/features/links/QrPreview";
-import { AnalyticsChart } from "@/components/features/analytics/AnalyticsChart";
-import { LocationPieChart } from "@/components/features/analytics/LocationPieChart";
+import { ActivityChart } from "@/components/features/analytics/ActivityChart";
 import { PagePreview } from "./PagePreview";
 import { PageBuilder } from "./PageBuilder";
 import { DEFAULT_PAGE_BUILDER_STATE, type PageBuilderState } from "./types";
 import { updatePageAction } from "@/actions/page.actions";
-import { listSubmissionsAction, exportLeadsCsvAction } from "@/actions/form.actions";
+import { listSubmissionsAction, exportLeadsExcelAction } from "@/actions/form.actions";
 import { getAnalyticsSummaryAction } from "@/actions/analytics.actions";
 import { updateCampaignLink } from "@/lib/api/campaigns";
-import { useSidebar } from "@/context/SidebarContext";
 
 export interface PageDetailManagerProps {
   page: Page;
@@ -60,18 +58,17 @@ const COUNTRY_INFO: Record<string, { name: string; flag: string }> = {
 export function PageDetailManager({ page: initialPage, links = [] }: PageDetailManagerProps) {
   const [page, setPage] = useState<Page>(initialPage);
   const [activeTab, setActiveTab] = useState<"overview" | "builder" | "leads">("overview");
-  const { isCollapsed, setIsCollapsed, toggleSidebar } = useSidebar();
 
   // Auto-collapse sidebar on page detail / visual builder
   useEffect(() => {
-    setIsCollapsed(true);
-  }, [setIsCollapsed]);
+    // setIsCollapsed(true);
+  }, []);
 
   useEffect(() => {
     if (activeTab === "builder") {
-      setIsCollapsed(true);
+      // setIsCollapsed(true);
     }
-  }, [activeTab, setIsCollapsed]);
+  }, [activeTab]);
 
   // Analytics & Submissions state
   const [summary, setSummary] = useState<AnalyticsSummary | null>(null);
@@ -214,7 +211,7 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
 
   const handleExportCsv = async () => {
     setCsvDownloading(true);
-    const res = await exportLeadsCsvAction(page.id);
+    const res = await exportLeadsExcelAction(page.id);
     setCsvDownloading(false);
 
     if (res.success && res.data) {
@@ -284,18 +281,6 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-4 border-b border-border">
         <div>
           <div className="flex items-center gap-3">
-            <button
-              onClick={toggleSidebar}
-              title={isCollapsed ? "Expand navigation sidebar" : "Collapse to icon strip"}
-              className="hidden md:flex p-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted border border-border transition-colors cursor-pointer"
-            >
-              {isCollapsed ? (
-                <PanelLeftOpen className="w-4 h-4 text-primary" />
-              ) : (
-                <PanelLeftClose className="w-4 h-4" />
-              )}
-            </button>
-
             <h1 className="text-xl md:text-2xl font-bold tracking-tight text-foreground">
               {page.title}
             </h1>
@@ -466,63 +451,9 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
 
             {/* Day-by-Day Activity Chart with Interactive Device Filter */}
             <div className="space-y-2">
-              <AnalyticsChart
+              <ActivityChart
                 title="Daily Scan & Engagement Trends"
-                subtitle="Day-by-day progression of QR scans, page views, and interactions."
-                data={dayByDayData}
-                type="area"
-                height={260}
-                headerRight={
-                  <div className="flex items-center bg-muted border border-border rounded-lg p-0.5 text-xs shadow-xs">
-                    <button
-                      type="button"
-                      onClick={() => setDeviceFilter("all")}
-                      className={`px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
-                        deviceFilter === "all"
-                          ? "bg-card text-foreground shadow-xs"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      All Devices
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDeviceFilter("mobile")}
-                      className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
-                        deviceFilter === "mobile"
-                          ? "bg-card text-primary shadow-xs"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      <Smartphone className="w-3 h-3" />
-                      <span>Mobile</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDeviceFilter("desktop")}
-                      className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
-                        deviceFilter === "desktop"
-                          ? "bg-card text-blue-400 shadow-xs"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      <Laptop className="w-3 h-3" />
-                      <span>Desktop</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setDeviceFilter("tablet")}
-                      className={`flex items-center gap-1 px-2.5 py-1 rounded-md font-medium transition-colors cursor-pointer ${
-                        deviceFilter === "tablet"
-                          ? "bg-card text-emerald-400 shadow-xs"
-                          : "text-muted-foreground hover:text-foreground"
-                      }`}
-                    >
-                      <Tablet className="w-3 h-3" />
-                      <span>Tablet</span>
-                    </button>
-                  </div>
-                }
+                description="Day-by-day progression of QR scans, page views, and interactions."
               />
             </div>
 
@@ -540,10 +471,9 @@ export function PageDetailManager({ page: initialPage, links = [] }: PageDetailM
                 </span>
               </div>
 
-              <LocationPieChart
-                locations={locationList}
-                totalCount={totalLocationCount}
-              />
+              <div className="text-center py-8 border border-dashed border-border rounded-xl">
+                Location data visualization coming soon
+              </div>
             </div>
           </div>
         </div>

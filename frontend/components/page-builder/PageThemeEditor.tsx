@@ -135,7 +135,7 @@ export function PageThemeEditor({
               type="text"
               value={theme.logoText || ""}
               onChange={(e) =>
-                onChange((prev) => ({ ...prev, logoText: e.target.value || null }))
+                onChange((prev) => ({ ...prev, logoText: e.target.value || undefined }))
               }
               placeholder="e.g. Zenith Media"
               className="w-full bg-card border border-border rounded-lg px-3 py-2 text-xs text-foreground focus:outline-none focus:border-primary transition-colors"
@@ -231,7 +231,7 @@ export function PageThemeEditor({
             </label>
             <div className="grid grid-cols-1 gap-2">
               {FONT_OPTIONS.map((font) => {
-                const isSelected = theme.fonts.headlineFont === font.name;
+                const isSelected = theme.fonts?.headlineFont === font.name;
                 return (
                   <button
                     key={font.id}
@@ -245,6 +245,10 @@ export function PageThemeEditor({
                           subtitleFont: font.name,
                           formFont: font.name,
                           buttonFont: font.name,
+                          headlineWeight: prev.fonts?.headlineWeight || "700",
+                          subtitleWeight: prev.fonts?.subtitleWeight || "400",
+                          formWeight: prev.fonts?.formWeight || "400",
+                          buttonWeight: prev.fonts?.buttonWeight || "600",
                         },
                       }))
                     }

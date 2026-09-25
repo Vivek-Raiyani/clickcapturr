@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
@@ -6,13 +7,24 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from app.api.v1.router import api_router
 from app.core.config import settings
+from app.core.database import engine
+from app.models import Base
 
-# Ensure media directory exists
-os.makedirs("media", exist_ok=True)
+# Ensure media directory exists if not on Vercel
+if not os.environ.get("VERCEL"):
+    os.makedirs("media", exist_ok=True)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    if os.environ.get("VERCEL"):
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+    yield
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
-    openapi_url="/api/v1/openapi.json"
+    openapi_url="/api/v1/openapi.json",
+    lifespan=lifespan
 )
 
 # Required by Authlib for Starlette
@@ -27,7 +39,8 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.mount("/media", StaticFiles(directory="media"), name="media")
+if not os.environ.get("VERCEL"):
+    app.mount("/media", StaticFiles(directory="media"), name="media")
 
 app.include_router(api_router, prefix="/api/v1")
 

@@ -25,3 +25,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True, extra="ignore")
 
 settings = Settings()
+
+import os
+if os.environ.get("VERCEL") and "sqlite" in settings.DATABASE_URL:
+    settings.DATABASE_URL = "sqlite+aiosqlite:////tmp/test.db"

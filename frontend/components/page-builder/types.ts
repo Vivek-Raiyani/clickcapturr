@@ -275,7 +275,7 @@ export const DEFAULT_PAGE_CONTENT: PageContent = {
     url: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?auto=format&fit=crop&w=1200&q=80",
     aspect: "16:9",
   },
-  buttonText: "UNLOCK INSTANT ACCESS →",
+  buttonText: "UNLOCK INSTANT ACCESS",
   offer: {
     type: "pdf",
     fileUrl: "https://example.com/guide.pdf",

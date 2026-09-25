@@ -674,6 +674,14 @@ export function PagePreview({
                         {/* Action Button: Clear, prominent, full-width across all devices */}
                         <button
                           type="button"
+                          onClick={() => {
+                            const url = content.offer?.fileUrl || content.successAction?.downloadUrl || content.offer?.url;
+                            if (url) {
+                              window.open(url, "_blank");
+                            } else {
+                              alert("Resource URL is not configured yet.");
+                            }
+                          }}
                           className="w-full py-3.5 sm:py-4 px-6 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider flex items-center justify-center gap-2.5 cursor-pointer shadow-xl transition-all duration-200 hover:brightness-110 active:scale-[0.98] whitespace-nowrap"
                           style={{
                             backgroundColor: theme.primaryColor,

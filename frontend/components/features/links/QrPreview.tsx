@@ -260,14 +260,14 @@ export const QrPreview: React.FC<QrPreviewProps> = ({
               </select>
             </div>
             
-            <div className="col-span-2">
+            {/* <div className="col-span-2">
               <label className="text-sm font-medium mb-1 block">Logo URL (Optional)</label>
               <Input 
                 placeholder="https://example.com/logo.png" 
                 value={config.logo_url || ""} 
                 onChange={(e) => handleUpdateConfig("logo_url", e.target.value)} 
               />
-            </div>
+            </div> */}
           </div>
         </div>
 
